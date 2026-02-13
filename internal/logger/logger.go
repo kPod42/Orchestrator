@@ -10,9 +10,13 @@ var (
 	errorLogger *log.Logger
 )
 
+func init() {
+	Init()
+}
+
 func Init() {
-	infoLogger = log.New(os.Stdout, "[INFO:] ", log.Ldate|log.Ltime|log.Lshortfile)
-	errorLogger = log.New(os.Stdout, "[ERROR:] ", log.Ldate|log.Ltime|log.Lshortfile)
+	infoLogger = log.New(os.Stdout, "[INFO:] ", log.Ldate|log.Ltime)
+	errorLogger = log.New(os.Stdout, "[ERROR:] ", log.Ldate|log.Ltime)
 }
 
 func Info(format string, v ...interface{}) {

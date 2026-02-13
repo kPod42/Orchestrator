@@ -1,34 +1,35 @@
 package main
 
 import (
+	"Coordinator/internal/app"
+	"Coordinator/internal/handler"
 	"Coordinator/internal/logger"
-	"log"
+	"Coordinator/internal/registry"
+	"Coordinator/internal/service"
+	httptransport "Coordinator/internal/transport/http"
+	"context"
 	"net/http"
 	"time"
-
-	"Coordinator/internal/handler"
-	"Coordinator/internal/registry"
 )
 
 func main() {
 	reg := registry.NewInMemoryRegistry()
 	h := handler.NewHTTPHandler(reg)
-	logger.Init()
+	router := httptransport.NewRouter(h)
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
 
-	http.HandleFunc("/register", h.Register)
-	http.HandleFunc("/heartbeat", h.Heartbeat)
-	http.HandleFunc("/nodes", h.GetNodes)
-	http.HandleFunc("/health", h.Health)
+	httpService := service.NewHTTPServer(server)
+	cleanupService := service.NewCleanupService(reg, 10*time.Second, 30*time.Second)
 
-	go func() {
-		ticker := time.NewTicker(10 * time.Second)
-		for range ticker.C {
-			err := reg.RemoveStale(30 * time.Second)
-			if err != nil {
-				return
-			}
-		}
-	}()
-	log.Println("Listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	application := app.NewApp(httpService, cleanupService)
+
+	ctx, stop := context.WithCancel(context.Background())
+	defer stop()
+
+	if err := application.Run(ctx); err != nil {
+		logger.Error("Failed to start HTTP server")
+	}
 }
