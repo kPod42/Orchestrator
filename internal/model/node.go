@@ -1,7 +1,7 @@
 package model
 
 type Endpoint struct {
-	Type    string `json:"type"`
+	Type    string `json:"kind"`
 	Address string `json:"address"`
 }
 type Node struct {

@@ -20,7 +20,7 @@ func NewApp(services ...Service) *App {
 func (a *App) Run(ctx context.Context) error {
 	var wg sync.WaitGroup
 
-	logger.App("Starting app: services=%d", len(a.services))
+	logger.App("Starting app: services = %d", len(a.services))
 
 	for _, service := range a.services {
 		wg.Add(1)
@@ -35,6 +35,6 @@ func (a *App) Run(ctx context.Context) error {
 	logger.Info("App shutting down...")
 
 	wg.Wait()
-	logger.Info("All services shut down.")
+	logger.Info("All services shut down .")
 	return nil
 }

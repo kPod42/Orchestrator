@@ -15,20 +15,20 @@ type nodeRecord struct {
 	active    bool
 }
 
-type memoryRegistry struct {
+type MemoryRegistry struct {
 	mutex       sync.RWMutex
 	nodes       map[string]*nodeRecord
 	grpcAddress string
 }
 
-func NewMemoryRegistry(grpcAddress string) *memoryRegistry {
-	return &memoryRegistry{
+func NewMemoryRegistry(grpcAddress string) *MemoryRegistry {
+	return &MemoryRegistry{
 		nodes:       make(map[string]*nodeRecord),
 		grpcAddress: grpcAddress,
 	}
 }
 
-func (m *memoryRegistry) Register(node model.Node) (model.RegisterResponse, error) {
+func (m *MemoryRegistry) Register(node model.Node) (model.RegisterResponse, error) {
 	if node.ID == "" {
 		return model.RegisterResponse{}, errors.New("node ID can`t be empty")
 	}
@@ -57,7 +57,7 @@ func (m *memoryRegistry) Register(node model.Node) (model.RegisterResponse, erro
 	}, nil
 }
 
-func (m *memoryRegistry) Attach(nodeID, sessionID string) error {
+func (m *MemoryRegistry) Attach(nodeID, sessionID string) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -74,7 +74,7 @@ func (m *memoryRegistry) Attach(nodeID, sessionID string) error {
 	return nil
 }
 
-func (m *memoryRegistry) Detach(nodeID string, sessionID string) {
+func (m *MemoryRegistry) Detach(nodeID string, sessionID string) {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -90,7 +90,7 @@ func (m *memoryRegistry) Detach(nodeID string, sessionID string) {
 	logger.Registry("detach: nodeId=%s active=false busy=false", nodeID)
 }
 
-func (m *memoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error {
+func (m *MemoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -110,7 +110,7 @@ func (m *memoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error
 	return nil
 }
 
-func (m *memoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []model.Endpoint) error {
+func (m *MemoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []model.Endpoint) error {
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
 
@@ -126,7 +126,7 @@ func (m *memoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []m
 	return nil
 }
 
-func (m *memoryRegistry) GetActive() []model.Node {
+func (m *MemoryRegistry) GetActive() []model.Node {
 	m.mutex.RLock()
 	defer m.mutex.RUnlock()
 
