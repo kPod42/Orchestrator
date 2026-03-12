@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"Coordinator/internal/logger"
 	"Coordinator/internal/model"
 	"crypto/rand"
 	"encoding/hex"
@@ -47,6 +48,8 @@ func (m *memoryRegistry) Register(node model.Node) (model.RegisterResponse, erro
 		active:    false,
 	}
 
+	logger.Registry("register: nodeId=%s sessionId=%s", node.ID, sessionID)
+
 	return model.RegisterResponse{
 		NodeID:      node.ID,
 		SessionID:   sessionID,
@@ -67,6 +70,7 @@ func (m *memoryRegistry) Attach(nodeID, sessionID string) error {
 	}
 
 	rec.active = true
+	logger.Registry("attach: nodeId=%s active=true", nodeID)
 	return nil
 }
 
@@ -83,6 +87,7 @@ func (m *memoryRegistry) Detach(nodeID string, sessionID string) {
 	}
 	rec.active = false
 	rec.node.Busy = false
+	logger.Registry("detach: nodeId=%s active=false busy=false", nodeID)
 }
 
 func (m *memoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error {
@@ -101,6 +106,7 @@ func (m *memoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error
 	}
 
 	rec.node.Busy = busy
+	logger.Registry("status update: nodeId=%s busy=%v", nodeID, busy)
 	return nil
 }
 
@@ -116,6 +122,7 @@ func (m *memoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []m
 		return errors.New("invalid sessionID")
 	}
 	rec.node.Endpoints = endpoints
+	logger.Registry("endpoints update: nodeId=%s endpoints=%v", nodeID, endpoints)
 	return nil
 }
 
@@ -129,6 +136,7 @@ func (m *memoryRegistry) GetActive() []model.Node {
 			result = append(result, rec.node)
 		}
 	}
+	logger.Registry("get active: count=%d", len(result))
 	return result
 }
 

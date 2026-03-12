@@ -32,12 +32,12 @@ func (s *GRPCServer) Start(ctx context.Context) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		logger.Info("grpc server listening on %s", s.addr)
+		logger.Net("grpc server listening on %s", s.addr)
 		errCh <- s.server.Serve(lis)
 	}()
 	select {
 	case <-ctx.Done():
-		logger.Info("grpc server shutting down")
+		logger.Net("grpc server shutting down")
 		s.server.Stop()
 		return nil
 	case err := <-errCh:
