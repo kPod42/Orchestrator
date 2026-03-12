@@ -9,27 +9,33 @@ import (
 	httptransport "Coordinator/internal/transport/http"
 	"context"
 	"net/http"
-	"time"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
-	reg := registry.NewInMemoryRegistry()
-	h := handler.NewHTTPHandler(reg)
-	router := httptransport.NewRouter(h)
-	server := &http.Server{
-		Addr:    "0.0.0.0:8080",
-		Handler: router,
-	}
-
-	httpService := service.NewHTTPServer(server)
-	cleanupService := service.NewCleanupService(reg, 10*time.Second, 30*time.Second)
-
-	application := app.NewApp(httpService, cleanupService)
-
-	ctx, stop := context.WithCancel(context.Background())
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	httpAddr := "0.0.0.0:8080"
+	grpcListenAddr := "0.0.0.0:9090"
+	grpcPublicAddr := "127.0.0.1:9090"
+
+	reg := registry.NewMemoryRegistry(grpcPublicAddr)
+	httpHandler := handler.NewHTTPHandler(reg)
+	httpSrv := service.NewHTTPServer(&http.Server{
+		Addr:    httpAddr,
+		Handler: httptransport.NewRouter(httpHandler),
+	})
+	presenceSvc := service.NewPresenceService(reg)
+	grpcSrv := service.NewGRPCServer(grpcListenAddr, presenceSvc)
+	application := app.NewApp(
+		httpSrv,
+		grpcSrv,
+	)
 	if err := application.Run(ctx); err != nil {
-		logger.Error("Failed to start HTTP server")
+		logger.Error("application.Run() error: %s", err)
 	}
+
 }

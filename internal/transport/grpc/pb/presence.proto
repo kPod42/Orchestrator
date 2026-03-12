@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package coordinator.v1;
+
+option go_package = "Coordinator/internal/transport/grpc/pb;pb";
+
+message ConnectRequest {
+  string node_id = 1;
+  string session_id = 2;
+}
+
+message StatusUpdate {
+  bool busy = 1;
+}
+
+message Endpoint {
+  string kind = 1;
+  string address = 2;
+}
+
+message EndpointUpdate {
+  repeated Endpoint endpoints = 1;
+}
+
+message AgentPresenceMessage {
+  oneof payload {
+    ConnectRequest connect = 1;
+    StatusUpdate status = 2;
+    EndpointUpdate endpoint_update = 3;
+  }
+}
+
+message ConnectAck {
+  string node_id = 1;
+}
+
+message ErrorMessage {
+  string message = 1;
+}
+
+message CoordinatorPresenceMessage {
+  oneof payload {
+    ConnectAck connect_ack = 1;
+    ErrorMessage error = 2;
+  }
+}
+
+service PresenceService {
+  rpc Connect(stream AgentPresenceMessage) returns (stream CoordinatorPresenceMessage);
+}

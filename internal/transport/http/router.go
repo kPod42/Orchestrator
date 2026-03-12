@@ -16,8 +16,8 @@ func NewRouter(h *handler.HTTPHandler) http.Handler {
 
 	r.Route("/coordinator", func(r chi.Router) {
 		r.Post("/register", h.Register)
-		r.Post("/heartbeat", h.Heartbeat)
 		r.Get("/nodes", h.GetNodes)
+		r.Get("/health", h.Health)
 	})
 
 	return r

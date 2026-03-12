@@ -1,72 +1,141 @@
 package registry
 
 import (
-	"Coordinator/internal/logger"
+	"Coordinator/internal/model"
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"sync"
-	"time"
-
-	"Coordinator/internal/model"
 )
 
-type InMemoryRegistry struct {
-	mu    sync.RWMutex
-	nodes map[string]*model.Node
+type nodeRecord struct {
+	node      model.Node
+	sessionID string
+	active    bool
 }
 
-func NewInMemoryRegistry() *InMemoryRegistry {
-	return &InMemoryRegistry{
-		nodes: make(map[string]*model.Node),
+type memoryRegistry struct {
+	mutex       sync.RWMutex
+	nodes       map[string]*nodeRecord
+	grpcAddress string
+}
+
+func NewMemoryRegistry(grpcAddress string) *memoryRegistry {
+	return &memoryRegistry{
+		nodes:       make(map[string]*nodeRecord),
+		grpcAddress: grpcAddress,
 	}
 }
 
-func (r *InMemoryRegistry) Register(node model.Node) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	node.LastSeen = time.Now()
-	r.nodes[node.ID] = &node
-	logger.Info("Node registered: %s (%s:%d)",
-		node.ID, node.IP, node.Port)
-	return nil
-}
-
-func (r *InMemoryRegistry) Heartbeat(id string) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	node, exists := r.nodes[id]
-	if !exists {
-		return errors.New("node does not exist")
+func (m *memoryRegistry) Register(node model.Node) (model.RegisterResponse, error) {
+	if node.ID == "" {
+		return model.RegisterResponse{}, errors.New("node ID can`t be empty")
 	}
-	node.LastSeen = time.Now()
+
+	sessionID, err := newSessionID()
+	if err != nil {
+		return model.RegisterResponse{}, err
+	}
+	node.Busy = false
+
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	m.nodes[node.ID] = &nodeRecord{
+		node:      node,
+		sessionID: sessionID,
+		active:    false,
+	}
+
+	return model.RegisterResponse{
+		NodeID:      node.ID,
+		SessionID:   sessionID,
+		GRPCAddress: m.grpcAddress,
+	}, nil
+}
+
+func (m *memoryRegistry) Attach(nodeID, sessionID string) error {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	rec, ok := m.nodes[nodeID]
+	if !ok {
+		return errors.New("node not registered")
+	}
+	if rec.sessionID != sessionID {
+		return errors.New("invalid sessionID")
+	}
+
+	rec.active = true
 	return nil
 }
 
-func (r *InMemoryRegistry) GetActive() []model.Node {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	var result []model.Node
-	for _, node := range r.nodes {
-		result = append(result, *node)
+func (m *memoryRegistry) Detach(nodeID string, sessionID string) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	rec, ok := m.nodes[nodeID]
+	if !ok {
+		return
+	}
+	if rec.sessionID != sessionID {
+		return
+	}
+	rec.active = false
+	rec.node.Busy = false
+}
+
+func (m *memoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	rec, ok := m.nodes[nodeID]
+	if !ok {
+		return errors.New("node not registered")
+	}
+	if rec.sessionID != sessionID {
+		return errors.New("invalid sessionID")
+	}
+	if !rec.active {
+		return errors.New("node is not active")
+	}
+
+	rec.node.Busy = busy
+	return nil
+}
+
+func (m *memoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []model.Endpoint) error {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
+	rec, ok := m.nodes[nodeID]
+	if !ok {
+		return errors.New("node not registered")
+	}
+	if rec.sessionID != sessionID {
+		return errors.New("invalid sessionID")
+	}
+	rec.node.Endpoints = endpoints
+	return nil
+}
+
+func (m *memoryRegistry) GetActive() []model.Node {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	result := make([]model.Node, 0, len(m.nodes))
+	for _, rec := range m.nodes {
+		if rec.active {
+			result = append(result, rec.node)
+		}
 	}
 	return result
 }
 
-func (r *InMemoryRegistry) RemoveStale(timeout time.Duration) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	removed := 0
-	now := time.Now()
-
-	for _, node := range r.nodes {
-		if now.Sub(node.LastSeen) > timeout {
-			delete(r.nodes, node.ID)
-			removed++
-		}
+func newSessionID() (string, error) {
+	var bytes [16]byte
+	if _, err := rand.Read(bytes[:]); err != nil {
+		return "", err
 	}
-
-	if removed > 0 {
-		logger.Info("Removed %d stale nodes", removed)
-	}
-	return nil
+	return hex.EncodeToString(bytes[:]), nil
 }

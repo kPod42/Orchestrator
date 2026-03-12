@@ -1,12 +1,18 @@
 package model
 
-import "time"
-
+type Endpoint struct {
+	Type    string `json:"type"`
+	Address string `json:"address"`
+}
 type Node struct {
-	ID          string   `json:"id"`
-	IP          string   `json:"ip"`
-	Port        int      `json:"port"`
-	Capabilites []string `json:"capabilites"`
+	ID           string     `json:"id"`
+	Capabilities []string   `json:"capabilities"`
+	Endpoints    []Endpoint `json:"endpoints"`
+	Busy         bool       `json:"busy"`
+}
 
-	LastSeen time.Time `json:"-"`
+type RegisterResponse struct {
+	NodeID      string `json:"nodeId"`
+	SessionID   string `json:"sessionId"`
+	GRPCAddress string `json:"grpcAddress"`
 }

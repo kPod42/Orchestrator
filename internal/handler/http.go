@@ -21,54 +21,34 @@ func (h *HTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if node.ID == "" {
-		http.Error(w, "Node ID can't be empty", http.StatusBadRequest)
-		return
-	}
-	if err := h.reg.Register(node); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-}
-
-func (h *HTTPHandler) Heartbeat(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		NodeID string `json:"nodeId"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	resp, err := h.reg.Register(node)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	if err := h.reg.Heartbeat(req.NodeID); err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func (h *HTTPHandler) GetNodes(w http.ResponseWriter, r *http.Request) {
-	capability := r.URL.Query().Get("capability")
+	queryCapability := r.URL.Query().Get("capability")
+	freeOnly := r.URL.Query().Get("free") == "true"
 
 	nodes := h.reg.GetActive()
-
-	if capability != "" {
-		var filteredNodes []model.Node
-		for _, node := range nodes {
-			for _, capability := range node.Capabilites {
-				if capability == capability {
-					filteredNodes = append(filteredNodes, node)
-					break
-				}
-			}
+	filtered := make([]model.Node, 0, len(nodes))
+	for _, node := range nodes {
+		if freeOnly && node.Busy {
+			continue
 		}
-		nodes = filteredNodes
+		if queryCapability != "" && !hasCapability(node, queryCapability) {
+			continue
+		}
+		filtered = append(filtered, node)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(nodes)
-	if err != nil {
-		return
-	}
+	_ = json.NewEncoder(w).Encode(filtered)
 }
 
 func (h *HTTPHandler) Health(w http.ResponseWriter, r *http.Request) {
@@ -77,4 +57,12 @@ func (h *HTTPHandler) Health(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+}
+func hasCapability(node model.Node, queryCapability string) bool {
+	for _, nodeCapability := range node.Capabilities {
+		if nodeCapability == queryCapability {
+			return true
+		}
+	}
+	return false
 }

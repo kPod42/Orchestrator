@@ -1,14 +1,14 @@
 package registry
 
 import (
-	"time"
-
 	"Coordinator/internal/model"
 )
 
 type Registry interface {
-	Register(node model.Node) error
-	Heartbeat(nodeID string) error
+	Register(node model.Node) (model.RegisterResponse, error)
 	GetActive() []model.Node
-	RemoveStale(timeout time.Duration) error
+	Attach(nodeID, sessionID string) error
+	Detach(nodeID string, sessionID string)
+	UpdateStatus(nodeID, sessionID string, busy bool) error
+	UpdateEndpoints(nodeID, sessionID string, endpoints []model.Endpoint) error
 }
