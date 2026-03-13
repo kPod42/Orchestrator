@@ -19,22 +19,20 @@ func NewHTTPHandler(reg registry.Registry) *HTTPHandler {
 func (h *HTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var node model.Node
 	if err := json.NewDecoder(r.Body).Decode(&node); err != nil {
-		logger.Error("Register decode failed: %v", err)
+		logger.Log("WARNING", "HTTP", "Failed to decode register request", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	logger.HTTP("register request: nodeId=%s capabilities=%v endpoints=%v",
-		node.ID, node.Capabilities, node.Endpoints)
+	logger.Log("INFO", "HTTP", "Received register request: nodeID = %s", node.ID)
 
 	resp, err := h.reg.Register(node)
 	if err != nil {
-		logger.Error("register failed: nodeId=%s err=%v", node.ID, err)
+		logger.Log("ERROR", "HTTP", "Failed to register node", err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	logger.HTTP("register success: nodeId=%s sessionId=%s grpc=%s",
-		resp.NodeID, resp.SessionID, resp.GRPCAddress)
+	logger.Log("INFO", "HTTP", "Successfully registered node: nodeID = %s", node.ID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -57,8 +55,7 @@ func (h *HTTPHandler) GetNodes(w http.ResponseWriter, r *http.Request) {
 		filtered = append(filtered, node)
 	}
 
-	logger.HTTP("get nodes: capability=%s freeOnly=%v count=%d",
-		queryCapability, freeOnly, len(filtered))
+	logger.Log("INFO", "HTTP", "Received request for all nodes %s", filtered)
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(filtered)

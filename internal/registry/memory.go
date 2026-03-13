@@ -48,7 +48,7 @@ func (m *MemoryRegistry) Register(node model.Node) (model.RegisterResponse, erro
 		active:    false,
 	}
 
-	logger.Registry("register: nodeId=%s sessionId=%s", node.ID, sessionID)
+	logger.Log("INFO", "MEMORY", "Registered node: nodeID = %s sessionID = %s", node.ID, sessionID)
 
 	return model.RegisterResponse{
 		NodeID:      node.ID,
@@ -70,7 +70,7 @@ func (m *MemoryRegistry) Attach(nodeID, sessionID string) error {
 	}
 
 	rec.active = true
-	logger.Registry("attach: nodeId=%s active=true", nodeID)
+	logger.Log("INFO", "MEMORY", "Attached node: nodeID = %s sessionID = %s", nodeID, sessionID)
 	return nil
 }
 
@@ -87,7 +87,7 @@ func (m *MemoryRegistry) Detach(nodeID string, sessionID string) {
 	}
 	rec.active = false
 	rec.node.Busy = false
-	logger.Registry("detach: nodeId=%s active=false busy=false", nodeID)
+	logger.Log("INFO", "MEMORY", "Detached node: nodeID = %s sessionID = %s", nodeID, sessionID)
 }
 
 func (m *MemoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error {
@@ -106,7 +106,7 @@ func (m *MemoryRegistry) UpdateStatus(nodeID, sessionID string, busy bool) error
 	}
 
 	rec.node.Busy = busy
-	logger.Registry("status update: nodeId=%s busy=%v", nodeID, busy)
+	logger.Log("INFO", "MEMORY", "Updated node status: nodeID = %s sessionID = %s busy = %v", nodeID, sessionID, busy)
 	return nil
 }
 
@@ -122,7 +122,7 @@ func (m *MemoryRegistry) UpdateEndpoints(nodeID, sessionID string, endpoints []m
 		return errors.New("invalid sessionID")
 	}
 	rec.node.Endpoints = endpoints
-	logger.Registry("endpoints update: nodeId=%s endpoints=%v", nodeID, endpoints)
+	logger.Log("INFO", "MEMORY", "Updated node endpoints: nodeID = %s sessionID = %s endpoints = %v", nodeID, sessionID, endpoints)
 	return nil
 }
 
@@ -136,7 +136,7 @@ func (m *MemoryRegistry) GetActive() []model.Node {
 			result = append(result, rec.node)
 		}
 	}
-	logger.Registry("get active: count=%d", len(result))
+	logger.Log("INFO", "MEMORY", "GetActive result = %d", result, len(result))
 	return result
 }
 

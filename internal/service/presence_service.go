@@ -22,34 +22,33 @@ func NewPresenceService(reg registry.Registry) *PresenceService {
 }
 
 func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error {
-	logger.Presence("stream opened")
+	logger.Log("INFO", "PRESENCE", "stream started")
 	firstMsg, err := stream.Recv()
 	if err != nil {
-		logger.Error("presence failed to receive first message: %v", err)
+		logger.Log("ERROR", "PRESENCE", "failed to receive first message", err)
 		return status.Error(codes.InvalidArgument, "failed to receive first message")
 	}
 
 	connect := firstMsg.GetConnect()
 	if connect == nil {
-		logger.Error("presence first message is not connect")
+		logger.Log("ERROR", "PRESENCE", "presence failed to connect first message")
 		return status.Error(codes.InvalidArgument, "first message must be connect")
 	}
 
-	logger.Presence("connect request: nodeId=%s sessionId=%s", connect.NodeId, connect.SessionId)
+	logger.Log("INFO", "PRESENCE", "connect first message: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 
 	if connect.NodeId == "" || connect.SessionId == "" {
-		logger.Error("presence invalid connect payload: nodeId=%s sessionId=%s",
-			connect.NodeId, connect.SessionId)
+		logger.Log("ERROR", "PRESENCE", "presence failed to connect payload")
 		return status.Error(codes.InvalidArgument, "nodeId and sessionId are required")
 	}
 
 	if err := s.reg.Attach(connect.NodeId, connect.SessionId); err != nil {
-		logger.Error("presence attach failed: nodeId=%s err=%v", connect.NodeId, err)
+		logger.Log("ERROR", "PRESENCE", "failed to attach node: nodeID = %s sessionID = %s error = %v", connect.NodeId, connect.SessionId, err)
 		return status.Error(codes.PermissionDenied, err.Error())
 	}
 	defer func() {
 		s.reg.Detach(connect.NodeId, connect.SessionId)
-		logger.Presence("stream detached: nodeId=%s", connect.NodeId)
+		logger.Log("INFO", "PRESENCE", "failed to detach node: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 	}()
 
 	if err := stream.Send(&pb.CoordinatorPresenceMessage{
@@ -59,25 +58,25 @@ func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error
 			},
 		},
 	}); err != nil {
-		logger.Error("presence ack send failed: nodeId=%s err=%v", connect.NodeId, err)
+		logger.Log("ERROR", "PRESENCE", "failed to send connect ack: nodeID = %s sessionID = %s error = %v", connect.NodeId, connect.SessionId, err)
 		return err
 	}
 
 	for {
 		msg, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
-			logger.Presence("stream closed by client: nodeId=%s", connect.NodeId)
+			logger.Log("INFO", "PRESENCE", "received EOF: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 			return nil
 		}
 		if err != nil {
-			logger.Error("presence stream recv error: nodeId=%s err=%v", connect.NodeId, err)
+			logger.Log("ERROR", "PRESENCE", "presence stream receive error: nodeId = %s err = %v", connect.NodeId, err)
 			return nil
 		}
 
 		switch payload := msg.Payload.(type) {
 		case *pb.AgentPresenceMessage_Status:
 			if err := s.reg.UpdateStatus(connect.NodeId, connect.SessionId, payload.Status.Busy); err != nil {
-				logger.Error("presence status update failed: nodeId=%s err=%v", connect.NodeId, err)
+				logger.Log("ERROR", "PRESENCE", "failed to update status: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 				return status.Error(codes.FailedPrecondition, err.Error())
 			}
 
@@ -91,7 +90,7 @@ func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error
 			}
 
 			if err := s.reg.UpdateEndpoints(connect.NodeId, connect.SessionId, endpoints); err != nil {
-				logger.Error("presence endpoint update failed: nodeId=%s err=%v", connect.NodeId, err)
+				logger.Log("ERROR", "PRESENCE", "failed to update endpoints: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 				return status.Error(codes.FailedPrecondition, err.Error())
 			}
 		}

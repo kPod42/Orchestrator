@@ -21,9 +21,9 @@ func NewHTTPServer(server *http.Server) *HttpServer {
 
 func (s *HttpServer) Start(ctx context.Context) error {
 	go func() {
-		logger.Net("Starting HTTP server on %s", s.server.Addr)
+		logger.Log("INFO", "NET", "http server listening on %s", s.server.Addr)
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error("Error starting HTTP server: %s", err)
+			logger.Log("ERROR", "NET", "http server failed to start: %v", err)
 		}
 	}()
 	<-ctx.Done()
@@ -31,6 +31,6 @@ func (s *HttpServer) Start(ctx context.Context) error {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	logger.Net("Shutting down HTTP server")
+	logger.Log("INFO", "NET", "http server shutting down")
 	return s.server.Shutdown(shutdownCtx)
 }

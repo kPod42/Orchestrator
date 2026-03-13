@@ -35,7 +35,7 @@ func main() {
 		grpcSrv,
 	)
 	if err := application.Run(ctx); err != nil {
-		logger.Error("application.Run() error: %s", err)
+		logger.Log("ERROR", "failed to start application", "err", err)
 	}
 
 }
