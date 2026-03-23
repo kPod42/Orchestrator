@@ -1,10 +1,10 @@
 package service
 
 import (
-	"Coordinator/internal/logger"
-	"Coordinator/internal/model"
-	"Coordinator/internal/registry"
-	pb "Coordinator/internal/transport/grpc/pb"
+	"Orch/gen/go/presencepb"
+	"Orch/internal/coordinator/model"
+	"Orch/internal/coordinator/registry"
+	"Orch/pkg/logger"
 	"errors"
 	"io"
 
@@ -13,7 +13,7 @@ import (
 )
 
 type PresenceService struct {
-	pb.UnimplementedPresenceServiceServer
+	presencepb.UnimplementedPresenceServiceServer
 	reg registry.Registry
 }
 
@@ -21,7 +21,7 @@ func NewPresenceService(reg registry.Registry) *PresenceService {
 	return &PresenceService{reg: reg}
 }
 
-func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error {
+func (s *PresenceService) Connect(stream presencepb.PresenceService_ConnectServer) error {
 	logger.Log("INFO", "PRESENCE", "stream started")
 	firstMsg, err := stream.Recv()
 	if err != nil {
@@ -48,12 +48,12 @@ func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error
 	}
 	defer func() {
 		s.reg.Detach(connect.NodeId, connect.SessionId)
-		logger.Log("INFO", "PRESENCE", "failed to detach node: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
+		logger.Log("INFO", "PRESENCE", "Stream detached: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 	}()
 
-	if err := stream.Send(&pb.CoordinatorPresenceMessage{
-		Payload: &pb.CoordinatorPresenceMessage_ConnectAck{
-			ConnectAck: &pb.ConnectAck{
+	if err := stream.Send(&presencepb.CoordinatorPresenceMessage{
+		Payload: &presencepb.CoordinatorPresenceMessage_ConnectAck{
+			ConnectAck: &presencepb.ConnectAck{
 				NodeId: connect.NodeId,
 			},
 		},
@@ -74,13 +74,13 @@ func (s *PresenceService) Connect(stream pb.PresenceService_ConnectServer) error
 		}
 
 		switch payload := msg.Payload.(type) {
-		case *pb.AgentPresenceMessage_Status:
+		case *presencepb.AgentPresenceMessage_Status:
 			if err := s.reg.UpdateStatus(connect.NodeId, connect.SessionId, payload.Status.Busy); err != nil {
 				logger.Log("ERROR", "PRESENCE", "failed to update status: nodeID = %s sessionID = %s", connect.NodeId, connect.SessionId)
 				return status.Error(codes.FailedPrecondition, err.Error())
 			}
 
-		case *pb.AgentPresenceMessage_EndpointUpdate:
+		case *presencepb.AgentPresenceMessage_EndpointUpdate:
 			endpoints := make([]model.Endpoint, 0, len(payload.EndpointUpdate.Endpoints))
 			for _, ep := range payload.EndpointUpdate.Endpoints {
 				endpoints = append(endpoints, model.Endpoint{

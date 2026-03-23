@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"Coordinator/internal/model"
+	"Orch/internal/coordinator/model"
 )
 
 type Registry interface {

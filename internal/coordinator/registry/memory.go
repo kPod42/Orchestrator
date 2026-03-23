@@ -1,8 +1,8 @@
 package registry
 
 import (
-	"Coordinator/internal/logger"
-	"Coordinator/internal/model"
+	"Orch/internal/coordinator/model"
+	"Orch/pkg/logger"
 	"crypto/rand"
 	"encoding/hex"
 	"errors"

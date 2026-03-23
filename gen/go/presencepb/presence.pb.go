@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.0
-// source: internal/transport/grpc/pb/presence.proto
+// source: api/proto/presence.proto
 
-package pb
+package presencepb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -31,7 +31,7 @@ type ConnectRequest struct {
 
 func (x *ConnectRequest) Reset() {
 	*x = ConnectRequest{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[0]
+	mi := &file_api_proto_presence_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *ConnectRequest) String() string {
 func (*ConnectRequest) ProtoMessage() {}
 
 func (x *ConnectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[0]
+	mi := &file_api_proto_presence_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *ConnectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConnectRequest.ProtoReflect.Descriptor instead.
 func (*ConnectRequest) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{0}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ConnectRequest) GetNodeId() string {
@@ -82,7 +82,7 @@ type StatusUpdate struct {
 
 func (x *StatusUpdate) Reset() {
 	*x = StatusUpdate{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[1]
+	mi := &file_api_proto_presence_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +94,7 @@ func (x *StatusUpdate) String() string {
 func (*StatusUpdate) ProtoMessage() {}
 
 func (x *StatusUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[1]
+	mi := &file_api_proto_presence_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +107,7 @@ func (x *StatusUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatusUpdate.ProtoReflect.Descriptor instead.
 func (*StatusUpdate) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{1}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *StatusUpdate) GetBusy() bool {
@@ -127,7 +127,7 @@ type Endpoint struct {
 
 func (x *Endpoint) Reset() {
 	*x = Endpoint{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[2]
+	mi := &file_api_proto_presence_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -139,7 +139,7 @@ func (x *Endpoint) String() string {
 func (*Endpoint) ProtoMessage() {}
 
 func (x *Endpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[2]
+	mi := &file_api_proto_presence_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -152,7 +152,7 @@ func (x *Endpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Endpoint.ProtoReflect.Descriptor instead.
 func (*Endpoint) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{2}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Endpoint) GetKind() string {
@@ -178,7 +178,7 @@ type EndpointUpdate struct {
 
 func (x *EndpointUpdate) Reset() {
 	*x = EndpointUpdate{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[3]
+	mi := &file_api_proto_presence_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +190,7 @@ func (x *EndpointUpdate) String() string {
 func (*EndpointUpdate) ProtoMessage() {}
 
 func (x *EndpointUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[3]
+	mi := &file_api_proto_presence_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +203,7 @@ func (x *EndpointUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EndpointUpdate.ProtoReflect.Descriptor instead.
 func (*EndpointUpdate) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{3}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *EndpointUpdate) GetEndpoints() []*Endpoint {
@@ -227,7 +227,7 @@ type AgentPresenceMessage struct {
 
 func (x *AgentPresenceMessage) Reset() {
 	*x = AgentPresenceMessage{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[4]
+	mi := &file_api_proto_presence_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -239,7 +239,7 @@ func (x *AgentPresenceMessage) String() string {
 func (*AgentPresenceMessage) ProtoMessage() {}
 
 func (x *AgentPresenceMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[4]
+	mi := &file_api_proto_presence_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -252,7 +252,7 @@ func (x *AgentPresenceMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AgentPresenceMessage.ProtoReflect.Descriptor instead.
 func (*AgentPresenceMessage) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AgentPresenceMessage) GetPayload() isAgentPresenceMessage_Payload {
@@ -320,7 +320,7 @@ type ConnectAck struct {
 
 func (x *ConnectAck) Reset() {
 	*x = ConnectAck{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[5]
+	mi := &file_api_proto_presence_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -332,7 +332,7 @@ func (x *ConnectAck) String() string {
 func (*ConnectAck) ProtoMessage() {}
 
 func (x *ConnectAck) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[5]
+	mi := &file_api_proto_presence_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +345,7 @@ func (x *ConnectAck) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConnectAck.ProtoReflect.Descriptor instead.
 func (*ConnectAck) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{5}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ConnectAck) GetNodeId() string {
@@ -364,7 +364,7 @@ type ErrorMessage struct {
 
 func (x *ErrorMessage) Reset() {
 	*x = ErrorMessage{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[6]
+	mi := &file_api_proto_presence_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -376,7 +376,7 @@ func (x *ErrorMessage) String() string {
 func (*ErrorMessage) ProtoMessage() {}
 
 func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[6]
+	mi := &file_api_proto_presence_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -389,7 +389,7 @@ func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorMessage.ProtoReflect.Descriptor instead.
 func (*ErrorMessage) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{6}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ErrorMessage) GetMessage() string {
@@ -412,7 +412,7 @@ type CoordinatorPresenceMessage struct {
 
 func (x *CoordinatorPresenceMessage) Reset() {
 	*x = CoordinatorPresenceMessage{}
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[7]
+	mi := &file_api_proto_presence_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +424,7 @@ func (x *CoordinatorPresenceMessage) String() string {
 func (*CoordinatorPresenceMessage) ProtoMessage() {}
 
 func (x *CoordinatorPresenceMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_transport_grpc_pb_presence_proto_msgTypes[7]
+	mi := &file_api_proto_presence_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,7 +437,7 @@ func (x *CoordinatorPresenceMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoordinatorPresenceMessage.ProtoReflect.Descriptor instead.
 func (*CoordinatorPresenceMessage) Descriptor() ([]byte, []int) {
-	return file_internal_transport_grpc_pb_presence_proto_rawDescGZIP(), []int{7}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CoordinatorPresenceMessage) GetPayload() isCoordinatorPresenceMessage_Payload {
@@ -481,11 +481,11 @@ func (*CoordinatorPresenceMessage_ConnectAck) isCoordinatorPresenceMessage_Paylo
 
 func (*CoordinatorPresenceMessage_Error) isCoordinatorPresenceMessage_Payload() {}
 
-var File_internal_transport_grpc_pb_presence_proto protoreflect.FileDescriptor
+var File_api_proto_presence_proto protoreflect.FileDescriptor
 
-const file_internal_transport_grpc_pb_presence_proto_rawDesc = "" +
+const file_api_proto_presence_proto_rawDesc = "" +
 	"\n" +
-	")internal/transport/grpc/pb/presence.proto\x12\x0ecoordinator.v1\"H\n" +
+	"\x18api/proto/presence.proto\x12\x10orch.presence.v1\"H\n" +
 	"\x0eConnectRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\x12\x1d\n" +
 	"\n" +
@@ -494,59 +494,59 @@ const file_internal_transport_grpc_pb_presence_proto_rawDesc = "" +
 	"\x04busy\x18\x01 \x01(\bR\x04busy\"8\n" +
 	"\bEndpoint\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x18\n" +
-	"\aaddress\x18\x02 \x01(\tR\aaddress\"H\n" +
-	"\x0eEndpointUpdate\x126\n" +
-	"\tendpoints\x18\x01 \x03(\v2\x18.coordinator.v1.EndpointR\tendpoints\"\xe0\x01\n" +
-	"\x14AgentPresenceMessage\x12:\n" +
-	"\aconnect\x18\x01 \x01(\v2\x1e.coordinator.v1.ConnectRequestH\x00R\aconnect\x126\n" +
-	"\x06status\x18\x02 \x01(\v2\x1c.coordinator.v1.StatusUpdateH\x00R\x06status\x12I\n" +
-	"\x0fendpoint_update\x18\x03 \x01(\v2\x1e.coordinator.v1.EndpointUpdateH\x00R\x0eendpointUpdateB\t\n" +
+	"\aaddress\x18\x02 \x01(\tR\aaddress\"J\n" +
+	"\x0eEndpointUpdate\x128\n" +
+	"\tendpoints\x18\x01 \x03(\v2\x1a.orch.presence.v1.EndpointR\tendpoints\"\xe6\x01\n" +
+	"\x14AgentPresenceMessage\x12<\n" +
+	"\aconnect\x18\x01 \x01(\v2 .orch.presence.v1.ConnectRequestH\x00R\aconnect\x128\n" +
+	"\x06status\x18\x02 \x01(\v2\x1e.orch.presence.v1.StatusUpdateH\x00R\x06status\x12K\n" +
+	"\x0fendpoint_update\x18\x03 \x01(\v2 .orch.presence.v1.EndpointUpdateH\x00R\x0eendpointUpdateB\t\n" +
 	"\apayload\"%\n" +
 	"\n" +
 	"ConnectAck\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\"(\n" +
 	"\fErrorMessage\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\x9c\x01\n" +
-	"\x1aCoordinatorPresenceMessage\x12=\n" +
-	"\vconnect_ack\x18\x01 \x01(\v2\x1a.coordinator.v1.ConnectAckH\x00R\n" +
-	"connectAck\x124\n" +
-	"\x05error\x18\x02 \x01(\v2\x1c.coordinator.v1.ErrorMessageH\x00R\x05errorB\t\n" +
-	"\apayload2r\n" +
-	"\x0fPresenceService\x12_\n" +
-	"\aConnect\x12$.coordinator.v1.AgentPresenceMessage\x1a*.coordinator.v1.CoordinatorPresenceMessage(\x010\x01B+Z)Coordinator/internal/transport/grpc/pb;pbb\x06proto3"
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xa0\x01\n" +
+	"\x1aCoordinatorPresenceMessage\x12?\n" +
+	"\vconnect_ack\x18\x01 \x01(\v2\x1c.orch.presence.v1.ConnectAckH\x00R\n" +
+	"connectAck\x126\n" +
+	"\x05error\x18\x02 \x01(\v2\x1e.orch.presence.v1.ErrorMessageH\x00R\x05errorB\t\n" +
+	"\apayload2v\n" +
+	"\x0fPresenceService\x12c\n" +
+	"\aConnect\x12&.orch.presence.v1.AgentPresenceMessage\x1a,.orch.presence.v1.CoordinatorPresenceMessage(\x010\x01B#Z!Orch/gen/go/presencepb;presencepbb\x06proto3"
 
 var (
-	file_internal_transport_grpc_pb_presence_proto_rawDescOnce sync.Once
-	file_internal_transport_grpc_pb_presence_proto_rawDescData []byte
+	file_api_proto_presence_proto_rawDescOnce sync.Once
+	file_api_proto_presence_proto_rawDescData []byte
 )
 
-func file_internal_transport_grpc_pb_presence_proto_rawDescGZIP() []byte {
-	file_internal_transport_grpc_pb_presence_proto_rawDescOnce.Do(func() {
-		file_internal_transport_grpc_pb_presence_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_internal_transport_grpc_pb_presence_proto_rawDesc), len(file_internal_transport_grpc_pb_presence_proto_rawDesc)))
+func file_api_proto_presence_proto_rawDescGZIP() []byte {
+	file_api_proto_presence_proto_rawDescOnce.Do(func() {
+		file_api_proto_presence_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_presence_proto_rawDesc), len(file_api_proto_presence_proto_rawDesc)))
 	})
-	return file_internal_transport_grpc_pb_presence_proto_rawDescData
+	return file_api_proto_presence_proto_rawDescData
 }
 
-var file_internal_transport_grpc_pb_presence_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_internal_transport_grpc_pb_presence_proto_goTypes = []any{
-	(*ConnectRequest)(nil),             // 0: coordinator.v1.ConnectRequest
-	(*StatusUpdate)(nil),               // 1: coordinator.v1.StatusUpdate
-	(*Endpoint)(nil),                   // 2: coordinator.v1.Endpoint
-	(*EndpointUpdate)(nil),             // 3: coordinator.v1.EndpointUpdate
-	(*AgentPresenceMessage)(nil),       // 4: coordinator.v1.AgentPresenceMessage
-	(*ConnectAck)(nil),                 // 5: coordinator.v1.ConnectAck
-	(*ErrorMessage)(nil),               // 6: coordinator.v1.ErrorMessage
-	(*CoordinatorPresenceMessage)(nil), // 7: coordinator.v1.CoordinatorPresenceMessage
+var file_api_proto_presence_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_proto_presence_proto_goTypes = []any{
+	(*ConnectRequest)(nil),             // 0: orch.presence.v1.ConnectRequest
+	(*StatusUpdate)(nil),               // 1: orch.presence.v1.StatusUpdate
+	(*Endpoint)(nil),                   // 2: orch.presence.v1.Endpoint
+	(*EndpointUpdate)(nil),             // 3: orch.presence.v1.EndpointUpdate
+	(*AgentPresenceMessage)(nil),       // 4: orch.presence.v1.AgentPresenceMessage
+	(*ConnectAck)(nil),                 // 5: orch.presence.v1.ConnectAck
+	(*ErrorMessage)(nil),               // 6: orch.presence.v1.ErrorMessage
+	(*CoordinatorPresenceMessage)(nil), // 7: orch.presence.v1.CoordinatorPresenceMessage
 }
-var file_internal_transport_grpc_pb_presence_proto_depIdxs = []int32{
-	2, // 0: coordinator.v1.EndpointUpdate.endpoints:type_name -> coordinator.v1.Endpoint
-	0, // 1: coordinator.v1.AgentPresenceMessage.connect:type_name -> coordinator.v1.ConnectRequest
-	1, // 2: coordinator.v1.AgentPresenceMessage.status:type_name -> coordinator.v1.StatusUpdate
-	3, // 3: coordinator.v1.AgentPresenceMessage.endpoint_update:type_name -> coordinator.v1.EndpointUpdate
-	5, // 4: coordinator.v1.CoordinatorPresenceMessage.connect_ack:type_name -> coordinator.v1.ConnectAck
-	6, // 5: coordinator.v1.CoordinatorPresenceMessage.error:type_name -> coordinator.v1.ErrorMessage
-	4, // 6: coordinator.v1.PresenceService.Connect:input_type -> coordinator.v1.AgentPresenceMessage
-	7, // 7: coordinator.v1.PresenceService.Connect:output_type -> coordinator.v1.CoordinatorPresenceMessage
+var file_api_proto_presence_proto_depIdxs = []int32{
+	2, // 0: orch.presence.v1.EndpointUpdate.endpoints:type_name -> orch.presence.v1.Endpoint
+	0, // 1: orch.presence.v1.AgentPresenceMessage.connect:type_name -> orch.presence.v1.ConnectRequest
+	1, // 2: orch.presence.v1.AgentPresenceMessage.status:type_name -> orch.presence.v1.StatusUpdate
+	3, // 3: orch.presence.v1.AgentPresenceMessage.endpoint_update:type_name -> orch.presence.v1.EndpointUpdate
+	5, // 4: orch.presence.v1.CoordinatorPresenceMessage.connect_ack:type_name -> orch.presence.v1.ConnectAck
+	6, // 5: orch.presence.v1.CoordinatorPresenceMessage.error:type_name -> orch.presence.v1.ErrorMessage
+	4, // 6: orch.presence.v1.PresenceService.Connect:input_type -> orch.presence.v1.AgentPresenceMessage
+	7, // 7: orch.presence.v1.PresenceService.Connect:output_type -> orch.presence.v1.CoordinatorPresenceMessage
 	7, // [7:8] is the sub-list for method output_type
 	6, // [6:7] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -554,17 +554,17 @@ var file_internal_transport_grpc_pb_presence_proto_depIdxs = []int32{
 	0, // [0:6] is the sub-list for field type_name
 }
 
-func init() { file_internal_transport_grpc_pb_presence_proto_init() }
-func file_internal_transport_grpc_pb_presence_proto_init() {
-	if File_internal_transport_grpc_pb_presence_proto != nil {
+func init() { file_api_proto_presence_proto_init() }
+func file_api_proto_presence_proto_init() {
+	if File_api_proto_presence_proto != nil {
 		return
 	}
-	file_internal_transport_grpc_pb_presence_proto_msgTypes[4].OneofWrappers = []any{
+	file_api_proto_presence_proto_msgTypes[4].OneofWrappers = []any{
 		(*AgentPresenceMessage_Connect)(nil),
 		(*AgentPresenceMessage_Status)(nil),
 		(*AgentPresenceMessage_EndpointUpdate)(nil),
 	}
-	file_internal_transport_grpc_pb_presence_proto_msgTypes[7].OneofWrappers = []any{
+	file_api_proto_presence_proto_msgTypes[7].OneofWrappers = []any{
 		(*CoordinatorPresenceMessage_ConnectAck)(nil),
 		(*CoordinatorPresenceMessage_Error)(nil),
 	}
@@ -572,17 +572,17 @@ func file_internal_transport_grpc_pb_presence_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_internal_transport_grpc_pb_presence_proto_rawDesc), len(file_internal_transport_grpc_pb_presence_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_presence_proto_rawDesc), len(file_api_proto_presence_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_internal_transport_grpc_pb_presence_proto_goTypes,
-		DependencyIndexes: file_internal_transport_grpc_pb_presence_proto_depIdxs,
-		MessageInfos:      file_internal_transport_grpc_pb_presence_proto_msgTypes,
+		GoTypes:           file_api_proto_presence_proto_goTypes,
+		DependencyIndexes: file_api_proto_presence_proto_depIdxs,
+		MessageInfos:      file_api_proto_presence_proto_msgTypes,
 	}.Build()
-	File_internal_transport_grpc_pb_presence_proto = out.File
-	file_internal_transport_grpc_pb_presence_proto_goTypes = nil
-	file_internal_transport_grpc_pb_presence_proto_depIdxs = nil
+	File_api_proto_presence_proto = out.File
+	file_api_proto_presence_proto_goTypes = nil
+	file_api_proto_presence_proto_depIdxs = nil
 }

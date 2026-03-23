@@ -1,12 +1,12 @@
 package main
 
 import (
-	"Coordinator/internal/app"
-	"Coordinator/internal/handler"
-	"Coordinator/internal/logger"
-	"Coordinator/internal/registry"
-	"Coordinator/internal/service"
-	httptransport "Coordinator/internal/transport/http"
+	"Orch/internal/coordinator/app"
+	"Orch/internal/coordinator/handler"
+	"Orch/internal/coordinator/registry"
+	service2 "Orch/internal/coordinator/service"
+	httptransport "Orch/internal/coordinator/transport/http"
+	"Orch/pkg/logger"
 	"context"
 	"net/http"
 	"os"
@@ -24,12 +24,12 @@ func main() {
 
 	reg := registry.NewMemoryRegistry(grpcPublicAddr)
 	httpHandler := handler.NewHTTPHandler(reg)
-	httpSrv := service.NewHTTPServer(&http.Server{
+	httpSrv := service2.NewHTTPServer(&http.Server{
 		Addr:    httpAddr,
 		Handler: httptransport.NewRouter(httpHandler),
 	})
-	presenceSvc := service.NewPresenceService(reg)
-	grpcSrv := service.NewGRPCServer(grpcListenAddr, presenceSvc)
+	presenceSvc := service2.NewPresenceService(reg)
+	grpcSrv := service2.NewGRPCServer(grpcListenAddr, presenceSvc)
 	application := app.NewApp(
 		httpSrv,
 		grpcSrv,

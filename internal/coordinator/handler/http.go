@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"Coordinator/internal/logger"
-	"Coordinator/internal/model"
-	"Coordinator/internal/registry"
+	"Orch/internal/coordinator/model"
+	"Orch/internal/coordinator/registry"
+	"Orch/pkg/logger"
 	"encoding/json"
 	"net/http"
 )

@@ -1,12 +1,10 @@
 package service
 
 import (
+	"Orch/gen/go/presencepb"
+	"Orch/pkg/logger"
 	"context"
 	"net"
-
-	pb "Coordinator/internal/transport/grpc/pb"
-
-	"Coordinator/internal/logger"
 
 	"google.golang.org/grpc"
 )
@@ -16,9 +14,9 @@ type GRPCServer struct {
 	addr   string
 }
 
-func NewGRPCServer(addr string, service pb.PresenceServiceServer) *GRPCServer {
+func NewGRPCServer(addr string, service presencepb.PresenceServiceServer) *GRPCServer {
 	srv := grpc.NewServer()
-	pb.RegisterPresenceServiceServer(srv, service)
+	presencepb.RegisterPresenceServiceServer(srv, service)
 	return &GRPCServer{
 		server: srv,
 		addr:   addr,

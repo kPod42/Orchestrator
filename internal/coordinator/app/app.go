@@ -1,10 +1,9 @@
 package app
 
 import (
+	"Orch/pkg/logger"
 	"context"
 	"sync"
-
-	"Coordinator/internal/logger"
 )
 
 type App struct {

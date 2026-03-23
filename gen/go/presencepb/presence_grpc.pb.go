@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.0
-// source: internal/transport/grpc/pb/presence.proto
+// source: api/proto/presence.proto
 
-package pb
+package presencepb
 
 import (
 	context "context"
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PresenceService_Connect_FullMethodName = "/coordinator.v1.PresenceService/Connect"
+	PresenceService_Connect_FullMethodName = "/orch.presence.v1.PresenceService/Connect"
 )
 
 // PresenceServiceClient is the client API for PresenceService service.
@@ -100,7 +100,7 @@ type PresenceService_ConnectServer = grpc.BidiStreamingServer[AgentPresenceMessa
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PresenceService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "coordinator.v1.PresenceService",
+	ServiceName: "orch.presence.v1.PresenceService",
 	HandlerType: (*PresenceServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -111,5 +111,5 @@ var PresenceService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "internal/transport/grpc/pb/presence.proto",
+	Metadata: "api/proto/presence.proto",
 }

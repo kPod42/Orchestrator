@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package coordinator.v1;
+package orch.presence.v1;
 
-option go_package = "Coordinator/internal/transport/grpc/pb;pb";
+option go_package = "Orch/gen/go/presencepb;presencepb";
 
 message ConnectRequest {
   string node_id = 1;

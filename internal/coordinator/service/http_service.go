@@ -1,12 +1,11 @@
 package service
 
 import (
+	"Orch/pkg/logger"
 	"context"
 	"errors"
 	"net/http"
 	"time"
-
-	"Coordinator/internal/logger"
 )
 
 type HttpServer struct {

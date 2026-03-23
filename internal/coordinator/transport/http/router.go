@@ -1,12 +1,11 @@
 package httptransport
 
 import (
+	"Orch/internal/coordinator/handler"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
-	"Coordinator/internal/handler"
 )
 
 func NewRouter(h *handler.HTTPHandler) http.Handler {
