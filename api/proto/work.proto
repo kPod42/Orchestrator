@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package orch.work.v1;
+
+option go_package = "Orch/gen/go/workpb;workpb";
+
+message ActionRequest {
+  string action = 1;
+  map<string, string> args = 2;
+}
+
+message ExecRequest {
+  string shell = 1;
+  string command = 2;
+  int32 timeout_sec = 3;
+}
+
+message OutputChunk{
+  string stream = 1; // stdout / stderr\
+  string chunk = 2;
+}
+
+message CommandResult {
+  bool success = 1;
+  int32 exit_code = 2;
+  string message = 3;
+}
+
+message ActionEvent {
+  oneof payload{
+    OutputChunk output = 1;
+    CommandResult result = 2;
+  }
+}
+
+message ExecEvent {
+  oneof payload{
+    OutputChunk output = 1;
+    CommandResult result = 2;
+  }
+}
+
+service AgentWorkService {
+  rpc Action(ActionRequest) returns (stream ActionEvent);
+  rpc Exec(ExecRequest) returns (stream ExecEvent);
+}

@@ -136,7 +136,7 @@ func (m *MemoryRegistry) GetActive() []model.Node {
 			result = append(result, rec.node)
 		}
 	}
-	logger.Log("INFO", "MEMORY", "GetActive result = %d", result, len(result))
+	//logger.Log("INFO", "MEMORY", "GetActive result = %d", result)
 	return result
 }
 

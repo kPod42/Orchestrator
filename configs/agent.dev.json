@@ -1,0 +1,26 @@
+{
+  "agent": {
+    "node_id": "agent-dev-1",
+    "capabilities": ["worker", "exec"]
+  },
+  "coordinator": {
+    "register_url": "http://127.0.0.1:8080/coordinator/register",
+    "grpc_address": "127.0.0.1:9090"
+  },
+  "work": {
+    "listen_address": "0.0.0.0:10000",
+    "advertise_endpoint": [
+      {
+        "kind": "lan",
+        "address": "127.0.0.1:10000"
+      }
+    ]
+  },
+  "security": {
+    "dev_mode": true,
+    "allow_exec": true,
+    "allowed_shells": ["powershell", "cmd"],
+    "allowed_actions": ["echo", "hostname", "list_processes"],
+    "exec_timeout_sec": 60
+  }
+}
