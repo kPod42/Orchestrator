@@ -6,19 +6,15 @@ import (
 	"sync"
 
 	"Orch/gen/go/workpb"
-	"Orch/internal/agent/executor"
 	"Orch/internal/agent/model"
-	"Orch/internal/agent/security"
+	"Orch/internal/agent/ports"
+	"Orch/internal/agent/state"
 	"Orch/pkg/logger"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-type BusyReporter interface {
-	SetBusy(bool)
-}
 
 type Server struct {
 	address    string
@@ -30,19 +26,24 @@ type Server struct {
 type serviceImpl struct {
 	workpb.UnimplementedAgentWorkServiceServer
 
-	executor *executor.Executor
-	policy   *security.Policy
-	reporter BusyReporter
-
-	mu   sync.Mutex
-	busy bool
+	executor ports.Executor
+	policy   ports.Policy
+	reporter ports.PresenceReporter
+	busy     *state.Busy
 }
 
-func NewServer(address string, exec *executor.Executor, policy *security.Policy, reporter BusyReporter) *Server {
+func NewServer(
+	address string,
+	exec ports.Executor,
+	policy ports.Policy,
+	reporter ports.PresenceReporter,
+	busy *state.Busy,
+) *Server {
 	svc := &serviceImpl{
 		executor: exec,
 		policy:   policy,
 		reporter: reporter,
+		busy:     busy,
 	}
 
 	grpcServer := grpc.NewServer()
@@ -58,6 +59,9 @@ func NewServer(address string, exec *executor.Executor, policy *security.Policy,
 func (s *Server) Ready() <-chan struct{} {
 	return s.readyCh
 }
+func (s *Server) Name() string {
+	return "work"
+}
 
 func (s *Server) Start(ctx context.Context) error {
 	lis, err := net.Listen("tcp", s.address)
@@ -72,13 +76,13 @@ func (s *Server) Start(ctx context.Context) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		logger.Log("NET", "agent work grpc server listening on %s", s.address)
+		logger.Log("INFO", "NET", "agent work grpc server listening on %s", s.address)
 		errCh <- s.grpcServer.Serve(lis)
 	}()
 
 	select {
 	case <-ctx.Done():
-		logger.Log("NET", "agent work grpc server shutting down", s.address)
+		logger.Log("INFO", "NET", "agent work grpc server shutting down")
 		s.grpcServer.GracefulStop()
 		return nil
 	case err := <-errCh:
@@ -87,84 +91,79 @@ func (s *Server) Start(ctx context.Context) error {
 }
 
 func (s *serviceImpl) Action(req *workpb.ActionRequest, stream workpb.AgentWorkService_ActionServer) error {
-	logger.Log("WORK", "received Action RPC: action = %s", req.Action)
+	logger.Log("INFO", "WORK", "received Action RPC: action = %s", req.Action)
 
-	if !s.occupy() {
-		return status.Error(codes.FailedPrecondition, "agent is busy")
-	}
-	defer s.release()
-
-	if err := s.policy.CheckActions(req.Action); err != nil {
-		return status.Error(codes.PermissionDenied, err.Error())
-	}
-
-	s.reporter.SetBusy(true)
-	defer s.reporter.SetBusy(false)
-
-	events, err := s.executor.RunAction(stream.Context(), req.Action, req.Args)
-	if err != nil {
-		return status.Error(codes.Internal, err.Error())
-	}
-
-	for ev := range events {
-		if err := stream.Send(toActionEvent(ev)); err != nil {
-			return err
-		}
-	}
-
-	logger.Log("WORK", "finished Action RPC: action = %s", req.Action)
-	return nil
+	return s.run(
+		stream.Context(),
+		func() error {
+			return s.policy.CheckAction(req.Action)
+		},
+		func(ctx context.Context) (<-chan model.Event, error) {
+			return s.executor.RunAction(ctx, req.Action, req.Args)
+		},
+		func(ev model.Event) error {
+			return stream.Send(toActionEvent(ev))
+		},
+		func() {
+			logger.Log("INFO", "WORK", "finished Action RPC: action = %s", req.Action)
+		},
+	)
 }
 
 func (s *serviceImpl) Exec(req *workpb.ExecRequest, stream workpb.AgentWorkService_ExecServer) error {
-	logger.Log("WORK", "received Exec RPC: shell = %s command = %s", req.Shell, req.Command)
+	logger.Log("INFO", "WORK", "received Exec RPC: shell = %s command = %s", req.Shell, req.Command)
 
-	if !s.occupy() {
+	timeout := s.policy.EffectiveExecTimeout(req.TimeoutSec)
+
+	return s.run(
+		stream.Context(),
+		func() error {
+			return s.policy.CheckExec(req.Shell)
+		},
+		func(ctx context.Context) (<-chan model.Event, error) {
+			return s.executor.RunExec(ctx, req.Shell, req.Command, timeout)
+		},
+		func(ev model.Event) error {
+			return stream.Send(toExecEvent(ev))
+		},
+		func() {
+			logger.Log("INFO", "WORK", "finished Exec RPC: shell = %s command = %s", req.Shell, req.Command)
+		},
+	)
+}
+
+func (s *serviceImpl) run(
+	ctx context.Context,
+	prepare func() error,
+	start func(context.Context) (<-chan model.Event, error),
+	send func(model.Event) error,
+	onDone func(),
+) error {
+	if !s.busy.Acquire() {
 		return status.Error(codes.FailedPrecondition, "agent is busy")
 	}
-	defer s.release()
+	defer s.busy.Release()
 
-	if err := s.policy.CheckExec(req.Shell); err != nil {
+	if err := prepare(); err != nil {
 		return status.Error(codes.PermissionDenied, err.Error())
 	}
-
-	timeout := s.policy.EffectiveExecTimeoutSec(req.TimeoutSec)
 
 	s.reporter.SetBusy(true)
 	defer s.reporter.SetBusy(false)
 
-	events, err := s.executor.RunExec(stream.Context(), req.Shell, req.Command, timeout)
+	events, err := start(ctx)
 	if err != nil {
 		return status.Error(codes.Internal, err.Error())
 	}
 
 	for ev := range events {
-		if err := stream.Send(toExecEvent(ev)); err != nil {
+		if err := send(ev); err != nil {
 			return err
 		}
 	}
 
-	logger.Log("WORK", "finished Exec RPC", "shell = %s command = %s", req.Shell, req.Command)
+	onDone()
 	return nil
-}
-
-func (s *serviceImpl) occupy() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if s.busy {
-		return false
-	}
-
-	s.busy = true
-	return true
-}
-
-func (s *serviceImpl) release() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	s.busy = false
 }
 
 func toActionEvent(ev model.Event) *workpb.ActionEvent {

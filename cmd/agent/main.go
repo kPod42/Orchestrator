@@ -2,18 +2,18 @@ package main
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"os"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 
+	"Orch/internal/agent/app"
 	"Orch/internal/agent/config"
 	"Orch/internal/agent/executor"
 	"Orch/internal/agent/presence"
 	"Orch/internal/agent/security"
+	"Orch/internal/agent/state"
 	"Orch/internal/agent/work"
 	"Orch/pkg/logger"
 )
@@ -30,61 +30,31 @@ func main() {
 
 	logger.Log("INFO", "AGENT", "starting agent: nodeID = %s", cfg.Agent.NodeID)
 
-	baseCtx, stopSignal := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stopSignal()
-
-	ctx, cancel := context.WithCancel(baseCtx)
-	defer cancel()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	exec := executor.New()
 	policy := security.New(cfg.Security)
 	presenceClient := presence.New(cfg)
-	workServer := work.NewServer(cfg.Work.ListenAddress, exec, policy, presenceClient)
+	busyState := state.NewBusy()
 
-	errCh := make(chan error, 2)
-	var wg sync.WaitGroup
+	workServer := work.NewServer(
+		cfg.Work.ListenAddress,
+		exec,
+		policy,
+		presenceClient,
+		busyState,
+	)
 
-	// 1. Start work server first.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if err := workServer.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
-			errCh <- err
-		}
-	}()
+	application := app.New(
+		workServer,
+		presenceClient,
+	)
 
-	// Wait until work server is actually listening.
-	select {
-	case <-workServer.Ready():
-		logger.Log("NET", "AGENT", "work server is ready, starting presence client")
-	case err := <-errCh:
-		logger.Log("ERROR", "AGENT", "startup failed: %v", err)
-		cancel()
-		wg.Wait()
+	if err := application.Run(ctx); err != nil {
+		logger.Log("ERROR", "AGENT", "application stopped with error: %v", err)
 		os.Exit(1)
-	case <-ctx.Done():
-		wg.Wait()
-		return
 	}
 
-	// 2. Start presence client after work server is ready.
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if err := presenceClient.Start(ctx); err != nil && !errors.Is(err, context.Canceled) {
-			errCh <- err
-		}
-	}()
-
-	// 3. Wait for shutdown or service failure.
-	select {
-	case err := <-errCh:
-		logger.Log("INFO", "AGENT", "service error: %v", err)
-		cancel()
-	case <-ctx.Done():
-		logger.Log("INFO", "AGENT", "shutdown signal received")
-	}
-
-	wg.Wait()
 	logger.Log("INFO", "AGENT", "agent stopped")
 }
