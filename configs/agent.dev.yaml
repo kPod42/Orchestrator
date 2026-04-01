@@ -1,0 +1,26 @@
+agent:
+  node_id: actor-alpine-1
+  capabilities:
+    - worker
+    - exec
+
+coordinator:
+  register_url: http://192.168.1.50:8080/coordinator/register
+  grpc_address: 192.168.1.50:9090
+
+work:
+  listen_address: 0.0.0.0:10000
+  advertise_endpoint:
+    - kind: lan
+      address: 192.168.1.101:10000
+
+security:
+  dev_mode: true
+  allow_exec: true
+  allowed_shells:
+    - sh
+  allowed_actions:
+    - echo
+    - hostname
+    - list_processes
+  exec_timeout_sec: 60

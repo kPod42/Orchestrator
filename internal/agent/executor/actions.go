@@ -45,7 +45,12 @@ func (e *Executor) hostnameAction(ctx context.Context, _ map[string]string) (<-c
 
 func (e *Executor) listProcessesAction(ctx context.Context, _ map[string]string) (<-chan model.Event, error) {
 	if runtime.GOOS == "windows" {
-		return e.runCommand(ctx, "cmd", "tasklist", 0)
+		return e.runCommand(
+			ctx,
+			"powershell",
+			"Get-Process |\nSelect-Object -First 20 ProcessName, Id, WorkingSet64 |\nConvertTo-Csv -NoTypeInformation",
+			0,
+		)
 	}
 
 	return e.runCommand(ctx, "sh", "ps -eo pid,comm,%cpu,%mem", 0)

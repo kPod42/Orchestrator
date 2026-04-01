@@ -20,7 +20,7 @@ func main() {
 
 	httpAddr := "0.0.0.0:8080"
 	grpcListenAddr := "0.0.0.0:9090"
-	grpcPublicAddr := "127.0.0.1:9090"
+	grpcPublicAddr := "192.168.159.1:9090"
 
 	reg := registry.NewMemoryRegistry(grpcPublicAddr)
 	httpHandler := handler.NewHTTPHandler(reg)
