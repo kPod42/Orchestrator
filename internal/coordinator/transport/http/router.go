@@ -17,6 +17,7 @@ func NewRouter(h *handler.HTTPHandler) http.Handler {
 		r.Post("/register", h.Register)
 		r.Get("/nodes", h.GetNodes)
 		r.Get("/health", h.Health)
+		r.Get("/info", h.Info)
 	})
 
 	return r

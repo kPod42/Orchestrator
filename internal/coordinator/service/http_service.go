@@ -19,17 +19,24 @@ func NewHTTPServer(server *http.Server) *HttpServer {
 }
 
 func (s *HttpServer) Start(ctx context.Context) error {
+	errCh := make(chan error, 1)
+
 	go func() {
 		logger.Log("INFO", "NET", "http server listening on %s", s.server.Addr)
-		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Log("ERROR", "NET", "http server failed to start: %v", err)
+		if err := s.server.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
+			errCh <- err
 		}
 	}()
-	<-ctx.Done()
+	select {
+	case <-ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+		logger.Log("INFO", "HTTP", "Shutting down HTTP server")
+		return s.server.Shutdown(shutdownCtx)
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	case err := <-errCh:
+		logger.Log("ERROR", "HTTP", "Failed to start HTTP server: %v", err)
+		return err
 
-	logger.Log("INFO", "NET", "http server shutting down")
-	return s.server.Shutdown(shutdownCtx)
+	}
 }

@@ -16,15 +16,38 @@ type nodeRecord struct {
 }
 
 type MemoryRegistry struct {
-	mutex       sync.RWMutex
-	nodes       map[string]*nodeRecord
-	grpcAddress string
+	mutex                sync.RWMutex
+	nodes                map[string]*nodeRecord
+	clusterID            string
+	coordinatorID        string
+	configVersion        int
+	coordinatorEndpoints []model.Endpoint
 }
 
-func NewMemoryRegistry(grpcAddress string) *MemoryRegistry {
+func (m *MemoryRegistry) GetCoordinatorInfo() model.CoordinatorInfo {
+	m.mutex.RLock()
+	defer m.mutex.RUnlock()
+
+	return model.CoordinatorInfo{
+		ClusterID:            m.clusterID,
+		CoordinatorID:        m.coordinatorID,
+		ConfigVersion:        m.configVersion,
+		CoordinatorEndpoints: cloneEndpoints(m.coordinatorEndpoints),
+	}
+}
+
+func NewMemoryRegistry(
+	clusterID string,
+	coordinatorID string,
+	configVersion int,
+	coordinatorEndpoints []model.Endpoint,
+) *MemoryRegistry {
 	return &MemoryRegistry{
-		nodes:       make(map[string]*nodeRecord),
-		grpcAddress: grpcAddress,
+		nodes:                make(map[string]*nodeRecord),
+		clusterID:            clusterID,
+		coordinatorID:        coordinatorID,
+		configVersion:        configVersion,
+		coordinatorEndpoints: coordinatorEndpoints,
 	}
 }
 
@@ -51,9 +74,11 @@ func (m *MemoryRegistry) Register(node model.Node) (model.RegisterResponse, erro
 	logger.Log("INFO", "MEMORY", "Registered node: nodeID = %s sessionID = %s", node.ID, sessionID)
 
 	return model.RegisterResponse{
-		NodeID:      node.ID,
-		SessionID:   sessionID,
-		GRPCAddress: m.grpcAddress,
+		NodeID:               node.ID,
+		SessionID:            sessionID,
+		GRPCAddress:          firstGRPCAddress(m.coordinatorEndpoints),
+		CoordinatorEndpoints: cloneEndpoints(m.coordinatorEndpoints),
+		ConfigVersion:        m.configVersion,
 	}, nil
 }
 
@@ -146,4 +171,19 @@ func newSessionID() (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(bytes[:]), nil
+}
+
+func cloneEndpoints(endpoints []model.Endpoint) []model.Endpoint {
+	result := make([]model.Endpoint, len(endpoints))
+	copy(result, endpoints)
+	return result
+}
+
+func firstGRPCAddress(endpoints []model.Endpoint) string {
+	for _, endpoint := range endpoints {
+		if endpoint.Type == "grpc" {
+			return endpoint.Address
+		}
+	}
+	return ""
 }

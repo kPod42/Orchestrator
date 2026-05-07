@@ -5,6 +5,7 @@ import (
 	"Orch/pkg/logger"
 	"context"
 	"net"
+	"time"
 
 	"google.golang.org/grpc"
 )
@@ -36,7 +37,18 @@ func (s *GRPCServer) Start(ctx context.Context) error {
 	select {
 	case <-ctx.Done():
 		logger.Log("INFO", "NET", "grpc server shutting down")
-		s.server.Stop()
+		stopped := make(chan struct{})
+		go func() {
+			s.server.GracefulStop()
+			close(stopped)
+		}()
+		select {
+		case <-stopped:
+			logger.Log("INFO", "NET", "grpc server stopped gracefully")
+		case <-time.After(5 * time.Second):
+			logger.Log("WARNING", "NET", "grpc graceful stop timeout, forcing stop")
+			s.server.Stop()
+		}
 		return nil
 	case err := <-errCh:
 		return err

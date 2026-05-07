@@ -3,6 +3,7 @@ package main
 import (
 	"Orch/internal/coordinator/app"
 	"Orch/internal/coordinator/handler"
+	"Orch/internal/coordinator/model"
 	"Orch/internal/coordinator/registry"
 	service2 "Orch/internal/coordinator/service"
 	httptransport "Orch/internal/coordinator/transport/http"
@@ -20,9 +21,40 @@ func main() {
 
 	httpAddr := "0.0.0.0:8080"
 	grpcListenAddr := "0.0.0.0:9090"
-	grpcPublicAddr := "192.168.159.1:9090"
+	clusterID := "home-lab"
+	coordinatorID := "main"
+	configVersion := 1
 
-	reg := registry.NewMemoryRegistry(grpcPublicAddr)
+	coordinatorEndpoints := []model.Endpoint{
+		{
+			Name:     "local",
+			Type:     "grpc",
+			Address:  "127.0.0.1:9090",
+			Scope:    "same-host",
+			Priority: 10,
+		},
+		{
+			Name:     "vmware",
+			Type:     "grpc",
+			Address:  "192.168.159.1:9090",
+			Scope:    "vmware-vmnet",
+			Priority: 20,
+		},
+		{
+			Name:     "lan",
+			Type:     "grpc",
+			Address:  "192.168.50.29:9090",
+			Scope:    "lan",
+			Priority: 30,
+		},
+	}
+
+	reg := registry.NewMemoryRegistry(
+		clusterID,
+		coordinatorID,
+		configVersion,
+		coordinatorEndpoints,
+	)
 	httpHandler := handler.NewHTTPHandler(reg)
 	httpSrv := service2.NewHTTPServer(&http.Server{
 		Addr:    httpAddr,

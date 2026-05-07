@@ -19,7 +19,7 @@ func NewHTTPHandler(reg registry.Registry) *HTTPHandler {
 func (h *HTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var node model.Node
 	if err := json.NewDecoder(r.Body).Decode(&node); err != nil {
-		logger.Log("WARNING", "HTTP", "Failed to decode register request", err.Error())
+		logger.Log("WARNING", "HTTP", "Failed to decode register request %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -28,7 +28,7 @@ func (h *HTTPHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.reg.Register(node)
 	if err != nil {
-		logger.Log("ERROR", "HTTP", "Failed to register node", err.Error())
+		logger.Log("ERROR", "HTTP", "Failed to register node: %v", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -55,7 +55,7 @@ func (h *HTTPHandler) GetNodes(w http.ResponseWriter, r *http.Request) {
 		filtered = append(filtered, node)
 	}
 
-	logger.Log("INFO", "HTTP", "Received request for all nodes %s", filtered)
+	logger.Log("INFO", "HTTP", "Received request for active nodes: count = %d", len(filtered))
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(filtered)
@@ -65,6 +65,7 @@ func (h *HTTPHandler) Health(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("ok"))
 	if err != nil {
+		logger.Log("ERROR", "HTTP", "Failed to write health response: %v", err)
 		return
 	}
 }
@@ -75,4 +76,16 @@ func hasCapability(node model.Node, queryCapability string) bool {
 		}
 	}
 	return false
+}
+func (h *HTTPHandler) Info(w http.ResponseWriter, r *http.Request) {
+	info := h.reg.GetCoordinatorInfo()
+	logger.Log("INFO", "HTTP", "Received coordinator info request")
+	writeJSON(w, http.StatusOK, info)
+}
+func writeJSON(w http.ResponseWriter, status int, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		logger.Log("ERROR", "HTTP", "Failed to encode json response: %v", err)
+	}
 }

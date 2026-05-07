@@ -31,7 +31,7 @@ func (s *PresenceService) Connect(stream presencepb.PresenceService_ConnectServe
 
 	connect := firstMsg.GetConnect()
 	if connect == nil {
-		logger.Log("ERROR", "PRESENCE", "presence failed to connect first message")
+		logger.Log("ERROR", "PRESENCE", "failed to receive first message: %v", err)
 		return status.Error(codes.InvalidArgument, "first message must be connect")
 	}
 
