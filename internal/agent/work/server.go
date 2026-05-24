@@ -2,8 +2,10 @@ package work
 
 import (
 	"context"
+	"errors"
 	"net"
 	"sync"
+	"time"
 
 	"Orch/gen/go/workpb"
 	"Orch/internal/agent/model"
@@ -76,15 +78,34 @@ func (s *Server) Start(ctx context.Context) error {
 	errCh := make(chan error, 1)
 
 	go func() {
-		logger.Log("INFO", "NET", "agent work grpc server listening on %s", s.address)
-		errCh <- s.grpcServer.Serve(lis)
+		logger.Log("INFO", "NET", "agent work grpc server listening on %s", lis.Addr().String())
+
+		if err := s.grpcServer.Serve(lis); err != nil && !errors.Is(err, grpc.ErrServerStopped) {
+			errCh <- err
+		}
 	}()
 
 	select {
 	case <-ctx.Done():
 		logger.Log("INFO", "NET", "agent work grpc server shutting down")
-		s.grpcServer.GracefulStop()
+
+		stopped := make(chan struct{})
+
+		go func() {
+			s.grpcServer.GracefulStop()
+			close(stopped)
+		}()
+
+		select {
+		case <-stopped:
+			logger.Log("INFO", "NET", "agent work grpc server stopped gracefully")
+		case <-time.After(5 * time.Second):
+			logger.Log("WARNING", "NET", "agent work grpc graceful stop timeout, forcing stop")
+			s.grpcServer.Stop()
+		}
+
 		return nil
+
 	case err := <-errCh:
 		return err
 	}

@@ -1,11 +1,11 @@
 package model
 
 type Endpoint struct {
-	Name     string `json:"name,omitempty"`
-	Type     string `json:"kind"`
+	Name     string `json:"name,omitempty" yaml:"name,omitempty"`
+	Type     string `json:"kind" yaml:"kind"`
 	Address  string `json:"address"`
-	Scope    string `json:"scope,omitempty"`
-	Priority int    `json:"priority,omitempty"`
+	Scope    string `json:"scope,omitempty" yaml:"scope,omitempty"`
+	Priority int    `json:"priority,omitempty" yaml:"priority,omitempty"`
 }
 type Node struct {
 	ID           string     `json:"id"`

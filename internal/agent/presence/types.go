@@ -10,9 +10,13 @@ type registerRequest struct {
 }
 
 type registerResponse struct {
-	NodeID      string `json:"nodeId"`
-	SessionID   string `json:"sessionId"`
+	NodeID    string `json:"nodeId"`
+	SessionID string `json:"sessionId"`
+	//Legacy field. Старый вариант ответа
 	GRPCAddress string `json:"grpcAddress"`
+
+	CoordinatorEndpoints []config.Endpoint `json:"coordinatorEndpoints"`
+	ConfigVersion        int               `json:"configVersion"`
 }
 type snapshot struct {
 	busy           bool

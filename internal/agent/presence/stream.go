@@ -3,6 +3,7 @@ package presence
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"Orch/gen/go/presencepb"
 	"Orch/pkg/logger"
@@ -19,25 +20,56 @@ func (c *Client) Start(ctx context.Context) error {
 		return err
 	}
 
-	grpcAddr := regResp.GRPCAddress
-	if grpcAddr == "" {
-		grpcAddr = c.cfg.Coordinator.GRPCAddress
-	}
-	if grpcAddr == "" {
-		return fmt.Errorf("presence grpc address is empty")
+	endpoints := coordinatorGRPCEndpoints(c.cfg, regResp)
+	if len(endpoints) == 0 {
+		return fmt.Errorf("presence grpc endpoints are empty")
 	}
 
-	return c.runSession(ctx, grpcAddr, regResp)
+	var lastErr error
+
+	for _, ep := range endpoints {
+		if ctx.Err() != nil {
+			return nil
+		}
+
+		logger.Log(
+			"INFO",
+			"PRESENCE",
+			"trying coordinator endpoint: %s",
+			endpointLabel(ep),
+		)
+
+		err := c.runSession(ctx, ep.Address, regResp)
+		if err == nil {
+			return nil
+		}
+
+		lastErr = err
+
+		logger.Log(
+			"WARNING",
+			"PRESENCE",
+			"coordinator endpoint failed: %s error = %v",
+			endpointLabel(ep),
+			err,
+		)
+	}
+
+	return fmt.Errorf("all coordinator grpc endpoints failed: %w", lastErr)
 }
 
 func (c *Client) runSession(ctx context.Context, grpcAddr string, regResp *registerResponse) error {
+	dialCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
 	conn, err := grpc.DialContext(
-		ctx,
+		dialCtx,
 		grpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
 	)
 	if err != nil {
-		return fmt.Errorf("dial coordinator presence grpc: %w", err)
+		return fmt.Errorf("dial coordinator presence grpc %s: %w", grpcAddr, err)
 	}
 	defer conn.Close()
 

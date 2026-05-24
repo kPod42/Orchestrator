@@ -1,12 +1,18 @@
 agent:
-  node_id: actor-alpine-1
+  node_id: actor-dev-1
   capabilities:
     - worker
     - exec
 
 coordinator:
   register_url: http://127.0.0.1:8080/coordinator/register
-  grpc_address: 127.0.0.1:9090
+
+  endpoints:
+    - name: local
+      kind: grpc
+      address: 127.0.0.1:9090
+      scope: same-host
+      priority: 100
 
 work:
   listen_address: 0.0.0.0:10000
@@ -19,6 +25,7 @@ security:
   allow_exec: true
   allowed_shells:
     - sh
+    - powershell
   allowed_actions:
     - echo
     - hostname

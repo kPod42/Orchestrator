@@ -11,8 +11,11 @@ import (
 )
 
 type Endpoint struct {
-	Kind    string `json:"kind" yaml:"kind"`
-	Address string `json:"address" yaml:"address"`
+	Name     string `json:"name,omitempty" yaml:"name,omitempty"`
+	Kind     string `json:"kind" yaml:"kind"`
+	Address  string `json:"address" yaml:"address"`
+	Scope    string `json:"scope,omitempty" yaml:"scope,omitempty"`
+	Priority int    `json:"priority,omitempty" yaml:"priority,omitempty"`
 }
 
 type AgentConfig struct {
@@ -21,8 +24,9 @@ type AgentConfig struct {
 }
 
 type CoordinatorConfig struct {
-	RegisterURL string `json:"register_url" yaml:"register_url"`
-	GRPCAddress string `json:"grpc_address" yaml:"grpc_address"`
+	RegisterURL string     `json:"register_url" yaml:"register_url"`
+	GRPCAddress string     `json:"grpc_address" yaml:"grpc_address"`
+	Endpoints   []Endpoint `json:"endpoints" yaml:"endpoints"`
 }
 
 type WorkConfig struct {

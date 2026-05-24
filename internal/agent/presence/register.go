@@ -1,6 +1,7 @@
 package presence
 
 import (
+	"Orch/internal/agent/config"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -54,14 +55,37 @@ func (c *Client) register(ctx context.Context) (*registerResponse, error) {
 		return nil, fmt.Errorf("decode register response: %w", err)
 	}
 
+	normalizeRegisterResponse(&out)
+
 	logger.Log(
 		"INFO",
 		"PRESENCE",
-		"registered: nodeID = %s sessionID = %s grpcAddress = %s",
+		"registered: nodeID = %s sessionID = %s coordinatorEndpoints = %d configVersion = %d",
 		out.NodeID,
 		out.SessionID,
-		out.GRPCAddress,
+		len(out.CoordinatorEndpoints),
+		out.ConfigVersion,
 	)
 
 	return &out, nil
+}
+
+func normalizeRegisterResponse(resp *registerResponse) {
+	if len(resp.CoordinatorEndpoints) > 0 {
+		return
+	}
+
+	if resp.GRPCAddress == "" {
+		return
+	}
+
+	resp.CoordinatorEndpoints = []config.Endpoint{
+		{
+			Name:     "legacy",
+			Kind:     "grpc",
+			Address:  resp.GRPCAddress,
+			Scope:    "legacy",
+			Priority: 1000,
+		},
+	}
 }
