@@ -1,0 +1,38 @@
+agent:
+  node_id: actor-alpine-1
+  capabilities:
+    - worker
+    - exec
+
+coordinator:
+  register_url: http://192.168.1.50:8080/coordinator/register
+
+  endpoints:
+    - name: vmware
+      kind: grpc
+      address: 192.168.159.1:9090
+      scope: vmware-vmnet
+      priority: 10
+
+    - name: local
+      kind: grpc
+      address: 127.0.0.1:9090
+      scope: same-host
+      priority: 100
+
+work:
+  listen_address: 0.0.0.0:10000
+  advertise_endpoint:
+    - kind: grpc
+      address: 192.168.159.225:10000
+
+security:
+  dev_mode: true
+  allow_exec: true
+  allowed_shells:
+    - sh
+  allowed_actions:
+    - echo
+    - hostname
+    - list_processes
+  exec_timeout_sec: 60
