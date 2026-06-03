@@ -47,12 +47,48 @@ func endpointMessage(endpoints []config.Endpoint) *presencepb.AgentPresenceMessa
 	}
 }
 
-func (c *Client) sendSnapshot(stream presencepb.PresenceService_ConnectClient, snap snapshot) error {
-	if err := stream.Send(endpointMessage(snap.endpoints)); err != nil {
+func taskOutputMessage(
+	taskID string,
+	stream string,
+	chunk string,
+) *presencepb.AgentPresenceMessage {
+	return &presencepb.AgentPresenceMessage{
+		Payload: &presencepb.AgentPresenceMessage_TaskOutput{
+			TaskOutput: &presencepb.TaskOutput{
+				TaskId: taskID,
+				Stream: stream,
+				Chunk:  chunk,
+			},
+		},
+	}
+}
+
+func taskResultMessage(
+	taskID string,
+	success bool,
+	exitCode int32,
+	message string,
+) *presencepb.AgentPresenceMessage {
+	return &presencepb.AgentPresenceMessage{
+		Payload: &presencepb.AgentPresenceMessage_TaskResult{
+			TaskResult: &presencepb.TaskResult{
+				TaskId:   taskID,
+				Success:  success,
+				ExitCode: exitCode,
+				Message:  message,
+			},
+		},
+	}
+}
+
+type sendPresenceMessageFunc func(*presencepb.AgentPresenceMessage) error
+
+func (c *Client) sendSnapshot(send sendPresenceMessageFunc, snap snapshot) error {
+	if err := send(endpointMessage(snap.endpoints)); err != nil {
 		return fmt.Errorf("send endpoints update: %w", err)
 	}
 
-	if err := stream.Send(statusMessage(snap.busy)); err != nil {
+	if err := send(statusMessage(snap.busy)); err != nil {
 		return fmt.Errorf("send busy update: %w", err)
 	}
 

@@ -22,11 +22,33 @@ message EndpointUpdate {
   repeated Endpoint endpoints = 1;
 }
 
+message TaskRequest{
+  string task_id = 1;
+  string action = 2;
+  map<string, string> args = 3;
+}
+
+message TaskOutput{
+  string task_id = 1;
+  string stream = 2;
+  string chunk = 3;
+}
+
+message TaskResult{
+  string task_id = 1;
+  bool success = 2;
+  int32 exit_code = 3;
+  string message = 4;
+}
+
 message AgentPresenceMessage {
   oneof payload {
     ConnectRequest connect = 1;
     StatusUpdate status = 2;
     EndpointUpdate endpoint_update = 3;
+    TaskOutput task_output = 4;
+    TaskResult task_result = 5;
+
   }
 }
 
@@ -42,6 +64,7 @@ message CoordinatorPresenceMessage {
   oneof payload {
     ConnectAck connect_ack = 1;
     ErrorMessage error = 2;
+    TaskRequest task_request = 3;
   }
 }
 

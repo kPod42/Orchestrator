@@ -1,19 +1,22 @@
 package main
 
 import (
-	"Orch/internal/coordinator/app"
-	coordconfig "Orch/internal/coordinator/config"
-	"Orch/internal/coordinator/handler"
-	"Orch/internal/coordinator/registry"
-	service2 "Orch/internal/coordinator/service"
-	httptransport "Orch/internal/coordinator/transport/http"
-	"Orch/pkg/logger"
 	"context"
 	"flag"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"Orch/internal/coordinator/app"
+	coordconfig "Orch/internal/coordinator/config"
+	"Orch/internal/coordinator/dispatcher"
+	"Orch/internal/coordinator/handler"
+	"Orch/internal/coordinator/registry"
+	service2 "Orch/internal/coordinator/service"
+	"Orch/internal/coordinator/session"
+	httptransport "Orch/internal/coordinator/transport/http"
+	"Orch/pkg/logger"
 )
 
 func main() {
@@ -36,28 +39,37 @@ func main() {
 		cfg.Coordinator.Endpoints,
 	)
 
-	httpHandler := handler.NewHTTPHandler(reg)
+	sessionManager := session.NewManager()
+	taskDispatcher := dispatcher.New(reg, sessionManager)
+
+	httpHandler := handler.NewHTTPHandler(reg, taskDispatcher)
 
 	httpSrv := service2.NewHTTPServer(&http.Server{
 		Addr:    cfg.Coordinator.HTTP.ListenAddr,
 		Handler: httptransport.NewRouter(httpHandler),
 	})
 
-	presenceSvc := service2.NewPresenceService(reg)
+	presenceSvc := service2.NewPresenceService(reg, sessionManager)
 
 	grpcSrv := service2.NewGRPCServer(
 		cfg.Coordinator.GRPC.ListenAddr,
 		presenceSvc,
 	)
 
-	logger.Log("INFO", "APP", "coordinator config loaded: clusterID = %s coordinatorID = %s configVersion = %d",
+	logger.Log(
+		"INFO",
+		"APP",
+		"coordinator config loaded: clusterID = %s coordinatorID = %s configVersion = %d",
 		cfg.Cluster.ID,
 		cfg.Coordinator.ID,
 		cfg.Coordinator.ConfigVersion,
 	)
 
 	for _, endpoint := range cfg.Coordinator.Endpoints {
-		logger.Log("INFO", "APP", "configured coordinator endpoint: name = %s kind = %s address = %s scope = %s priority = %d",
+		logger.Log(
+			"INFO",
+			"APP",
+			"configured coordinator endpoint: name = %s kind = %s address = %s scope = %s priority = %d",
 			endpoint.Name,
 			endpoint.Type,
 			endpoint.Address,

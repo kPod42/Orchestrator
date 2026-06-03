@@ -4,10 +4,16 @@ import (
 	"sync"
 
 	"Orch/internal/agent/config"
+	"Orch/internal/agent/ports"
+	"Orch/internal/agent/state"
 )
 
 type Client struct {
 	cfg *config.Config
+
+	executor ports.Executor
+	policy   ports.Policy
+	busy     *state.Busy
 
 	mu    sync.Mutex
 	state snapshot
@@ -18,11 +24,19 @@ type Client struct {
 	readyOnce sync.Once
 }
 
-func New(cfg *config.Config) *Client {
+func New(
+	cfg *config.Config,
+	executor ports.Executor,
+	policy ports.Policy,
+	busy *state.Busy,
+) *Client {
 	initialEndpoints := append([]config.Endpoint(nil), cfg.Work.AdvertiseEndpoint...)
 
 	return &Client{
-		cfg: cfg,
+		cfg:      cfg,
+		executor: executor,
+		policy:   policy,
+		busy:     busy,
 		state: snapshot{
 			busy:           false,
 			endpoints:      initialEndpoints,
@@ -44,11 +58,13 @@ func (c *Client) Ready() <-chan struct{} {
 
 func (c *Client) SetBusy(b bool) {
 	c.mu.Lock()
+
 	changed := c.state.busy != b
 	if changed {
 		c.state.busy = b
 		c.state.dirtyBusy = true
 	}
+
 	c.mu.Unlock()
 
 	if changed {
@@ -60,11 +76,13 @@ func (c *Client) SetEndpoints(endpoints []config.Endpoint) {
 	copyEndpoints := append([]config.Endpoint(nil), endpoints...)
 
 	c.mu.Lock()
+
 	changed := !endpointsEqual(c.state.endpoints, copyEndpoints)
 	if changed {
 		c.state.endpoints = copyEndpoints
 		c.state.dirtyEndpoints = true
 	}
+
 	c.mu.Unlock()
 
 	if changed {
@@ -115,6 +133,7 @@ func endpointsEqual(a, b []config.Endpoint) bool {
 
 	return true
 }
+
 func (c *Client) currentSnapshot() snapshot {
 	c.mu.Lock()
 	defer c.mu.Unlock()

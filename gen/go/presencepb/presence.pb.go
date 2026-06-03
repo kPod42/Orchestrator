@@ -213,6 +213,194 @@ func (x *EndpointUpdate) GetEndpoints() []*Endpoint {
 	return nil
 }
 
+type TaskRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Action        string                 `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
+	Args          map[string]string      `protobuf:"bytes,3,rep,name=args,proto3" json:"args,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskRequest) Reset() {
+	*x = TaskRequest{}
+	mi := &file_api_proto_presence_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskRequest) ProtoMessage() {}
+
+func (x *TaskRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_presence_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskRequest.ProtoReflect.Descriptor instead.
+func (*TaskRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TaskRequest) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskRequest) GetAction() string {
+	if x != nil {
+		return x.Action
+	}
+	return ""
+}
+
+func (x *TaskRequest) GetArgs() map[string]string {
+	if x != nil {
+		return x.Args
+	}
+	return nil
+}
+
+type TaskOutput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Stream        string                 `protobuf:"bytes,2,opt,name=stream,proto3" json:"stream,omitempty"`
+	Chunk         string                 `protobuf:"bytes,3,opt,name=chunk,proto3" json:"chunk,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskOutput) Reset() {
+	*x = TaskOutput{}
+	mi := &file_api_proto_presence_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskOutput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskOutput) ProtoMessage() {}
+
+func (x *TaskOutput) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_presence_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskOutput.ProtoReflect.Descriptor instead.
+func (*TaskOutput) Descriptor() ([]byte, []int) {
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TaskOutput) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskOutput) GetStream() string {
+	if x != nil {
+		return x.Stream
+	}
+	return ""
+}
+
+func (x *TaskOutput) GetChunk() string {
+	if x != nil {
+		return x.Chunk
+	}
+	return ""
+}
+
+type TaskResult struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TaskId        string                 `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	ExitCode      int32                  `protobuf:"varint,3,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TaskResult) Reset() {
+	*x = TaskResult{}
+	mi := &file_api_proto_presence_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TaskResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TaskResult) ProtoMessage() {}
+
+func (x *TaskResult) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_presence_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TaskResult.ProtoReflect.Descriptor instead.
+func (*TaskResult) Descriptor() ([]byte, []int) {
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *TaskResult) GetTaskId() string {
+	if x != nil {
+		return x.TaskId
+	}
+	return ""
+}
+
+func (x *TaskResult) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *TaskResult) GetExitCode() int32 {
+	if x != nil {
+		return x.ExitCode
+	}
+	return 0
+}
+
+func (x *TaskResult) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 type AgentPresenceMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Payload:
@@ -220,6 +408,8 @@ type AgentPresenceMessage struct {
 	//	*AgentPresenceMessage_Connect
 	//	*AgentPresenceMessage_Status
 	//	*AgentPresenceMessage_EndpointUpdate
+	//	*AgentPresenceMessage_TaskOutput
+	//	*AgentPresenceMessage_TaskResult
 	Payload       isAgentPresenceMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -227,7 +417,7 @@ type AgentPresenceMessage struct {
 
 func (x *AgentPresenceMessage) Reset() {
 	*x = AgentPresenceMessage{}
-	mi := &file_api_proto_presence_proto_msgTypes[4]
+	mi := &file_api_proto_presence_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -239,7 +429,7 @@ func (x *AgentPresenceMessage) String() string {
 func (*AgentPresenceMessage) ProtoMessage() {}
 
 func (x *AgentPresenceMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_presence_proto_msgTypes[4]
+	mi := &file_api_proto_presence_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -252,7 +442,7 @@ func (x *AgentPresenceMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AgentPresenceMessage.ProtoReflect.Descriptor instead.
 func (*AgentPresenceMessage) Descriptor() ([]byte, []int) {
-	return file_api_proto_presence_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AgentPresenceMessage) GetPayload() isAgentPresenceMessage_Payload {
@@ -289,6 +479,24 @@ func (x *AgentPresenceMessage) GetEndpointUpdate() *EndpointUpdate {
 	return nil
 }
 
+func (x *AgentPresenceMessage) GetTaskOutput() *TaskOutput {
+	if x != nil {
+		if x, ok := x.Payload.(*AgentPresenceMessage_TaskOutput); ok {
+			return x.TaskOutput
+		}
+	}
+	return nil
+}
+
+func (x *AgentPresenceMessage) GetTaskResult() *TaskResult {
+	if x != nil {
+		if x, ok := x.Payload.(*AgentPresenceMessage_TaskResult); ok {
+			return x.TaskResult
+		}
+	}
+	return nil
+}
+
 type isAgentPresenceMessage_Payload interface {
 	isAgentPresenceMessage_Payload()
 }
@@ -305,11 +513,23 @@ type AgentPresenceMessage_EndpointUpdate struct {
 	EndpointUpdate *EndpointUpdate `protobuf:"bytes,3,opt,name=endpoint_update,json=endpointUpdate,proto3,oneof"`
 }
 
+type AgentPresenceMessage_TaskOutput struct {
+	TaskOutput *TaskOutput `protobuf:"bytes,4,opt,name=task_output,json=taskOutput,proto3,oneof"`
+}
+
+type AgentPresenceMessage_TaskResult struct {
+	TaskResult *TaskResult `protobuf:"bytes,5,opt,name=task_result,json=taskResult,proto3,oneof"`
+}
+
 func (*AgentPresenceMessage_Connect) isAgentPresenceMessage_Payload() {}
 
 func (*AgentPresenceMessage_Status) isAgentPresenceMessage_Payload() {}
 
 func (*AgentPresenceMessage_EndpointUpdate) isAgentPresenceMessage_Payload() {}
+
+func (*AgentPresenceMessage_TaskOutput) isAgentPresenceMessage_Payload() {}
+
+func (*AgentPresenceMessage_TaskResult) isAgentPresenceMessage_Payload() {}
 
 type ConnectAck struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -320,7 +540,7 @@ type ConnectAck struct {
 
 func (x *ConnectAck) Reset() {
 	*x = ConnectAck{}
-	mi := &file_api_proto_presence_proto_msgTypes[5]
+	mi := &file_api_proto_presence_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -332,7 +552,7 @@ func (x *ConnectAck) String() string {
 func (*ConnectAck) ProtoMessage() {}
 
 func (x *ConnectAck) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_presence_proto_msgTypes[5]
+	mi := &file_api_proto_presence_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +565,7 @@ func (x *ConnectAck) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConnectAck.ProtoReflect.Descriptor instead.
 func (*ConnectAck) Descriptor() ([]byte, []int) {
-	return file_api_proto_presence_proto_rawDescGZIP(), []int{5}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ConnectAck) GetNodeId() string {
@@ -364,7 +584,7 @@ type ErrorMessage struct {
 
 func (x *ErrorMessage) Reset() {
 	*x = ErrorMessage{}
-	mi := &file_api_proto_presence_proto_msgTypes[6]
+	mi := &file_api_proto_presence_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -376,7 +596,7 @@ func (x *ErrorMessage) String() string {
 func (*ErrorMessage) ProtoMessage() {}
 
 func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_presence_proto_msgTypes[6]
+	mi := &file_api_proto_presence_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -389,7 +609,7 @@ func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorMessage.ProtoReflect.Descriptor instead.
 func (*ErrorMessage) Descriptor() ([]byte, []int) {
-	return file_api_proto_presence_proto_rawDescGZIP(), []int{6}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ErrorMessage) GetMessage() string {
@@ -405,6 +625,7 @@ type CoordinatorPresenceMessage struct {
 	//
 	//	*CoordinatorPresenceMessage_ConnectAck
 	//	*CoordinatorPresenceMessage_Error
+	//	*CoordinatorPresenceMessage_TaskRequest
 	Payload       isCoordinatorPresenceMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -412,7 +633,7 @@ type CoordinatorPresenceMessage struct {
 
 func (x *CoordinatorPresenceMessage) Reset() {
 	*x = CoordinatorPresenceMessage{}
-	mi := &file_api_proto_presence_proto_msgTypes[7]
+	mi := &file_api_proto_presence_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -424,7 +645,7 @@ func (x *CoordinatorPresenceMessage) String() string {
 func (*CoordinatorPresenceMessage) ProtoMessage() {}
 
 func (x *CoordinatorPresenceMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_presence_proto_msgTypes[7]
+	mi := &file_api_proto_presence_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -437,7 +658,7 @@ func (x *CoordinatorPresenceMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoordinatorPresenceMessage.ProtoReflect.Descriptor instead.
 func (*CoordinatorPresenceMessage) Descriptor() ([]byte, []int) {
-	return file_api_proto_presence_proto_rawDescGZIP(), []int{7}
+	return file_api_proto_presence_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CoordinatorPresenceMessage) GetPayload() isCoordinatorPresenceMessage_Payload {
@@ -465,6 +686,15 @@ func (x *CoordinatorPresenceMessage) GetError() *ErrorMessage {
 	return nil
 }
 
+func (x *CoordinatorPresenceMessage) GetTaskRequest() *TaskRequest {
+	if x != nil {
+		if x, ok := x.Payload.(*CoordinatorPresenceMessage_TaskRequest); ok {
+			return x.TaskRequest
+		}
+	}
+	return nil
+}
+
 type isCoordinatorPresenceMessage_Payload interface {
 	isCoordinatorPresenceMessage_Payload()
 }
@@ -477,9 +707,15 @@ type CoordinatorPresenceMessage_Error struct {
 	Error *ErrorMessage `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
 }
 
+type CoordinatorPresenceMessage_TaskRequest struct {
+	TaskRequest *TaskRequest `protobuf:"bytes,3,opt,name=task_request,json=taskRequest,proto3,oneof"`
+}
+
 func (*CoordinatorPresenceMessage_ConnectAck) isCoordinatorPresenceMessage_Payload() {}
 
 func (*CoordinatorPresenceMessage_Error) isCoordinatorPresenceMessage_Payload() {}
+
+func (*CoordinatorPresenceMessage_TaskRequest) isCoordinatorPresenceMessage_Payload() {}
 
 var File_api_proto_presence_proto protoreflect.FileDescriptor
 
@@ -496,21 +732,44 @@ const file_api_proto_presence_proto_rawDesc = "" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12\x18\n" +
 	"\aaddress\x18\x02 \x01(\tR\aaddress\"J\n" +
 	"\x0eEndpointUpdate\x128\n" +
-	"\tendpoints\x18\x01 \x03(\v2\x1a.orch.presence.v1.EndpointR\tendpoints\"\xe6\x01\n" +
+	"\tendpoints\x18\x01 \x03(\v2\x1a.orch.presence.v1.EndpointR\tendpoints\"\xb4\x01\n" +
+	"\vTaskRequest\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x16\n" +
+	"\x06action\x18\x02 \x01(\tR\x06action\x12;\n" +
+	"\x04args\x18\x03 \x03(\v2'.orch.presence.v1.TaskRequest.ArgsEntryR\x04args\x1a7\n" +
+	"\tArgsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"S\n" +
+	"\n" +
+	"TaskOutput\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x16\n" +
+	"\x06stream\x18\x02 \x01(\tR\x06stream\x12\x14\n" +
+	"\x05chunk\x18\x03 \x01(\tR\x05chunk\"v\n" +
+	"\n" +
+	"TaskResult\x12\x17\n" +
+	"\atask_id\x18\x01 \x01(\tR\x06taskId\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x1b\n" +
+	"\texit_code\x18\x03 \x01(\x05R\bexitCode\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage\"\xe8\x02\n" +
 	"\x14AgentPresenceMessage\x12<\n" +
 	"\aconnect\x18\x01 \x01(\v2 .orch.presence.v1.ConnectRequestH\x00R\aconnect\x128\n" +
 	"\x06status\x18\x02 \x01(\v2\x1e.orch.presence.v1.StatusUpdateH\x00R\x06status\x12K\n" +
-	"\x0fendpoint_update\x18\x03 \x01(\v2 .orch.presence.v1.EndpointUpdateH\x00R\x0eendpointUpdateB\t\n" +
+	"\x0fendpoint_update\x18\x03 \x01(\v2 .orch.presence.v1.EndpointUpdateH\x00R\x0eendpointUpdate\x12?\n" +
+	"\vtask_output\x18\x04 \x01(\v2\x1c.orch.presence.v1.TaskOutputH\x00R\n" +
+	"taskOutput\x12?\n" +
+	"\vtask_result\x18\x05 \x01(\v2\x1c.orch.presence.v1.TaskResultH\x00R\n" +
+	"taskResultB\t\n" +
 	"\apayload\"%\n" +
 	"\n" +
 	"ConnectAck\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\tR\x06nodeId\"(\n" +
 	"\fErrorMessage\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\xa0\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\xe4\x01\n" +
 	"\x1aCoordinatorPresenceMessage\x12?\n" +
 	"\vconnect_ack\x18\x01 \x01(\v2\x1c.orch.presence.v1.ConnectAckH\x00R\n" +
 	"connectAck\x126\n" +
-	"\x05error\x18\x02 \x01(\v2\x1e.orch.presence.v1.ErrorMessageH\x00R\x05errorB\t\n" +
+	"\x05error\x18\x02 \x01(\v2\x1e.orch.presence.v1.ErrorMessageH\x00R\x05error\x12B\n" +
+	"\ftask_request\x18\x03 \x01(\v2\x1d.orch.presence.v1.TaskRequestH\x00R\vtaskRequestB\t\n" +
 	"\apayload2v\n" +
 	"\x0fPresenceService\x12c\n" +
 	"\aConnect\x12&.orch.presence.v1.AgentPresenceMessage\x1a,.orch.presence.v1.CoordinatorPresenceMessage(\x010\x01B#Z!Orch/gen/go/presencepb;presencepbb\x06proto3"
@@ -527,31 +786,39 @@ func file_api_proto_presence_proto_rawDescGZIP() []byte {
 	return file_api_proto_presence_proto_rawDescData
 }
 
-var file_api_proto_presence_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_proto_presence_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_api_proto_presence_proto_goTypes = []any{
 	(*ConnectRequest)(nil),             // 0: orch.presence.v1.ConnectRequest
 	(*StatusUpdate)(nil),               // 1: orch.presence.v1.StatusUpdate
 	(*Endpoint)(nil),                   // 2: orch.presence.v1.Endpoint
 	(*EndpointUpdate)(nil),             // 3: orch.presence.v1.EndpointUpdate
-	(*AgentPresenceMessage)(nil),       // 4: orch.presence.v1.AgentPresenceMessage
-	(*ConnectAck)(nil),                 // 5: orch.presence.v1.ConnectAck
-	(*ErrorMessage)(nil),               // 6: orch.presence.v1.ErrorMessage
-	(*CoordinatorPresenceMessage)(nil), // 7: orch.presence.v1.CoordinatorPresenceMessage
+	(*TaskRequest)(nil),                // 4: orch.presence.v1.TaskRequest
+	(*TaskOutput)(nil),                 // 5: orch.presence.v1.TaskOutput
+	(*TaskResult)(nil),                 // 6: orch.presence.v1.TaskResult
+	(*AgentPresenceMessage)(nil),       // 7: orch.presence.v1.AgentPresenceMessage
+	(*ConnectAck)(nil),                 // 8: orch.presence.v1.ConnectAck
+	(*ErrorMessage)(nil),               // 9: orch.presence.v1.ErrorMessage
+	(*CoordinatorPresenceMessage)(nil), // 10: orch.presence.v1.CoordinatorPresenceMessage
+	nil,                                // 11: orch.presence.v1.TaskRequest.ArgsEntry
 }
 var file_api_proto_presence_proto_depIdxs = []int32{
-	2, // 0: orch.presence.v1.EndpointUpdate.endpoints:type_name -> orch.presence.v1.Endpoint
-	0, // 1: orch.presence.v1.AgentPresenceMessage.connect:type_name -> orch.presence.v1.ConnectRequest
-	1, // 2: orch.presence.v1.AgentPresenceMessage.status:type_name -> orch.presence.v1.StatusUpdate
-	3, // 3: orch.presence.v1.AgentPresenceMessage.endpoint_update:type_name -> orch.presence.v1.EndpointUpdate
-	5, // 4: orch.presence.v1.CoordinatorPresenceMessage.connect_ack:type_name -> orch.presence.v1.ConnectAck
-	6, // 5: orch.presence.v1.CoordinatorPresenceMessage.error:type_name -> orch.presence.v1.ErrorMessage
-	4, // 6: orch.presence.v1.PresenceService.Connect:input_type -> orch.presence.v1.AgentPresenceMessage
-	7, // 7: orch.presence.v1.PresenceService.Connect:output_type -> orch.presence.v1.CoordinatorPresenceMessage
-	7, // [7:8] is the sub-list for method output_type
-	6, // [6:7] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	2,  // 0: orch.presence.v1.EndpointUpdate.endpoints:type_name -> orch.presence.v1.Endpoint
+	11, // 1: orch.presence.v1.TaskRequest.args:type_name -> orch.presence.v1.TaskRequest.ArgsEntry
+	0,  // 2: orch.presence.v1.AgentPresenceMessage.connect:type_name -> orch.presence.v1.ConnectRequest
+	1,  // 3: orch.presence.v1.AgentPresenceMessage.status:type_name -> orch.presence.v1.StatusUpdate
+	3,  // 4: orch.presence.v1.AgentPresenceMessage.endpoint_update:type_name -> orch.presence.v1.EndpointUpdate
+	5,  // 5: orch.presence.v1.AgentPresenceMessage.task_output:type_name -> orch.presence.v1.TaskOutput
+	6,  // 6: orch.presence.v1.AgentPresenceMessage.task_result:type_name -> orch.presence.v1.TaskResult
+	8,  // 7: orch.presence.v1.CoordinatorPresenceMessage.connect_ack:type_name -> orch.presence.v1.ConnectAck
+	9,  // 8: orch.presence.v1.CoordinatorPresenceMessage.error:type_name -> orch.presence.v1.ErrorMessage
+	4,  // 9: orch.presence.v1.CoordinatorPresenceMessage.task_request:type_name -> orch.presence.v1.TaskRequest
+	7,  // 10: orch.presence.v1.PresenceService.Connect:input_type -> orch.presence.v1.AgentPresenceMessage
+	10, // 11: orch.presence.v1.PresenceService.Connect:output_type -> orch.presence.v1.CoordinatorPresenceMessage
+	11, // [11:12] is the sub-list for method output_type
+	10, // [10:11] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_presence_proto_init() }
@@ -559,14 +826,17 @@ func file_api_proto_presence_proto_init() {
 	if File_api_proto_presence_proto != nil {
 		return
 	}
-	file_api_proto_presence_proto_msgTypes[4].OneofWrappers = []any{
+	file_api_proto_presence_proto_msgTypes[7].OneofWrappers = []any{
 		(*AgentPresenceMessage_Connect)(nil),
 		(*AgentPresenceMessage_Status)(nil),
 		(*AgentPresenceMessage_EndpointUpdate)(nil),
+		(*AgentPresenceMessage_TaskOutput)(nil),
+		(*AgentPresenceMessage_TaskResult)(nil),
 	}
-	file_api_proto_presence_proto_msgTypes[7].OneofWrappers = []any{
+	file_api_proto_presence_proto_msgTypes[10].OneofWrappers = []any{
 		(*CoordinatorPresenceMessage_ConnectAck)(nil),
 		(*CoordinatorPresenceMessage_Error)(nil),
+		(*CoordinatorPresenceMessage_TaskRequest)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -574,7 +844,7 @@ func file_api_proto_presence_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_presence_proto_rawDesc), len(file_api_proto_presence_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

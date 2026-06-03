@@ -35,8 +35,14 @@ func main() {
 
 	exec := executor.New()
 	policy := security.New(cfg.Security)
-	presenceClient := presence.New(cfg)
 	busyState := state.NewBusy()
+
+	presenceClient := presence.New(
+		cfg,
+		exec,
+		policy,
+		busyState,
+	)
 
 	workServer := work.NewServer(
 		cfg.Work.ListenAddress,
