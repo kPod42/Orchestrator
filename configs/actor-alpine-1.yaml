@@ -24,15 +24,16 @@ work:
   listen_address: 0.0.0.0:10000
   advertise_endpoint:
     - kind: grpc
-      address: 192.168.159.225:10000
+      address: 192.168.159.130:10000
 
 security:
-  dev_mode: true
   allow_exec: true
+
   allowed_shells:
     - sh
-  allowed_actions:
-    - echo
-    - hostname
-    - list_processes
+    - bash
+
+  action_policy:
+    mode: allow_all_known
+
   exec_timeout_sec: 60

@@ -35,11 +35,16 @@ type WorkConfig struct {
 }
 
 type SecurityConfig struct {
-	DevMode        bool     `json:"dev_mode" yaml:"dev_mode"`
-	AllowExec      bool     `json:"allow_exec" yaml:"allow_exec"`
-	AllowedShells  []string `json:"allowed_shells" yaml:"allowed_shells"`
-	AllowedActions []string `json:"allowed_actions" yaml:"allowed_actions"`
-	ExecTimeoutSec int      `json:"exec_timeout_sec" yaml:"exec_timeout_sec"`
+	AllowExec      bool               `json:"allow_exec" yaml:"allow_exec"`
+	AllowedShells  []string           `json:"allowed_shells" yaml:"allowed_shells"`
+	ActionPolicy   ActionPolicyConfig `json:"action_policy" yaml:"action_policy"`
+	ExecTimeoutSec int                `json:"exec_timeout_sec" yaml:"exec_timeout_sec"`
+}
+
+type ActionPolicyConfig struct {
+	Mode      string   `json:"mode" yaml:"mode"`
+	Whitelist []string `json:"whitelist" yaml:"whitelist"`
+	Blacklist []string `json:"blacklist" yaml:"blacklist"`
 }
 
 type Config struct {
@@ -114,6 +119,11 @@ func (c *Config) validate() error {
 
 	if c.Security.ExecTimeoutSec <= 0 {
 		c.Security.ExecTimeoutSec = 60
+	}
+
+	c.Security.ActionPolicy.Mode = strings.ToLower(strings.TrimSpace(c.Security.ActionPolicy.Mode))
+	if c.Security.ActionPolicy.Mode == "" {
+		c.Security.ActionPolicy.Mode = "allow_all_known"
 	}
 
 	return nil

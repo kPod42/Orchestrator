@@ -61,6 +61,7 @@ func NewServer(
 func (s *Server) Ready() <-chan struct{} {
 	return s.readyCh
 }
+
 func (s *Server) Name() string {
 	return "work"
 }
@@ -116,9 +117,8 @@ func (s *serviceImpl) Action(req *workpb.ActionRequest, stream workpb.AgentWorkS
 
 	return s.run(
 		stream.Context(),
-		func() error {
-			return s.policy.CheckAction(req.Action)
-		},
+		nil,
+		codes.PermissionDenied,
 		func(ctx context.Context) (<-chan model.Event, error) {
 			return s.executor.RunAction(ctx, req.Action, req.Args)
 		},
@@ -141,6 +141,7 @@ func (s *serviceImpl) Exec(req *workpb.ExecRequest, stream workpb.AgentWorkServi
 		func() error {
 			return s.policy.CheckExec(req.Shell)
 		},
+		codes.Internal,
 		func(ctx context.Context) (<-chan model.Event, error) {
 			return s.executor.RunExec(ctx, req.Shell, req.Command, timeout)
 		},
@@ -156,6 +157,7 @@ func (s *serviceImpl) Exec(req *workpb.ExecRequest, stream workpb.AgentWorkServi
 func (s *serviceImpl) run(
 	ctx context.Context,
 	prepare func() error,
+	startErrCode codes.Code,
 	start func(context.Context) (<-chan model.Event, error),
 	send func(model.Event) error,
 	onDone func(),
@@ -165,8 +167,10 @@ func (s *serviceImpl) run(
 	}
 	defer s.busy.Release()
 
-	if err := prepare(); err != nil {
-		return status.Error(codes.PermissionDenied, err.Error())
+	if prepare != nil {
+		if err := prepare(); err != nil {
+			return status.Error(codes.PermissionDenied, err.Error())
+		}
 	}
 
 	s.reporter.SetBusy(true)
@@ -174,7 +178,7 @@ func (s *serviceImpl) run(
 
 	events, err := start(ctx)
 	if err != nil {
-		return status.Error(codes.Internal, err.Error())
+		return status.Error(startErrCode, err.Error())
 	}
 
 	for ev := range events {

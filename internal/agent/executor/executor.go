@@ -3,61 +3,67 @@ package executor
 import (
 	"context"
 	"fmt"
-	"strings"
 
+	"Orch/internal/agent/action"
 	"Orch/internal/agent/model"
 )
 
-type ActionHandler func(ctx context.Context, args map[string]string) (<-chan model.Event, error)
+type ActionPolicy interface {
+	CheckAction(action string, known action.KnownActions) error
+}
 
 type Executor struct {
-	actions map[string]ActionHandler
+	registry *action.Registry
+	policy   ActionPolicy
 }
 
-func New() *Executor {
-	e := &Executor{
-		actions: make(map[string]ActionHandler),
+func New(policy ActionPolicy) *Executor {
+	return NewWithRegistry(policy, action.NewDefaultRegistry())
+}
+
+func NewWithRegistry(policy ActionPolicy, registry *action.Registry) *Executor {
+	if registry == nil {
+		registry = action.NewDefaultRegistry()
 	}
 
-	e.registerBuiltinActions()
-	return e
-}
-
-func (e *Executor) RunAction(ctx context.Context, action string, args map[string]string) (<-chan model.Event, error) {
-	action = strings.ToLower(strings.TrimSpace(action))
-
-	handler, ok := e.actions[action]
-	if !ok {
-		return nil, fmt.Errorf("unknown action: %s", action)
-	}
-
-	return handler(ctx, args)
-}
-
-func (e *Executor) registerAction(name string, handler ActionHandler) {
-	name = strings.ToLower(strings.TrimSpace(name))
-	if name == "" || handler == nil {
-		return
-	}
-
-	e.actions[name] = handler
-}
-
-func outputEvent(stream, chunk string) model.Event {
-	return model.Event{
-		Output: &model.Output{
-			Stream: stream,
-			Chunk:  chunk,
-		},
+	return &Executor{
+		registry: registry,
+		policy:   policy,
 	}
 }
 
-func resultEvent(success bool, exitCode int32, message string) model.Event {
-	return model.Event{
-		Result: &model.Result{
-			Success:  success,
-			ExitCode: exitCode,
-			Message:  message,
-		},
+func (e *Executor) RunAction(ctx context.Context, actionName string, args map[string]string) (<-chan model.Event, error) {
+	actionName = action.NormalizeName(actionName)
+	if actionName == "" {
+		return nil, fmt.Errorf("empty action")
 	}
+
+	if e.policy != nil {
+		if err := e.policy.CheckAction(actionName, e); err != nil {
+			return nil, err
+		}
+	}
+
+	handler, err := e.registry.MustGet(actionName)
+	if err != nil {
+		return nil, err
+	}
+
+	return handler.Run(ctx, args)
+}
+
+func (e *Executor) HasAction(name string) bool {
+	if e == nil || e.registry == nil {
+		return false
+	}
+
+	return e.registry.HasAction(name)
+}
+
+func (e *Executor) ListActions() []action.Info {
+	if e == nil || e.registry == nil {
+		return nil
+	}
+
+	return e.registry.List()
 }

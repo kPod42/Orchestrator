@@ -200,11 +200,6 @@ func (c *Client) runTask(
 	}
 	defer c.busy.Release()
 
-	if err := c.policy.CheckAction(task.Action); err != nil {
-		_ = send(taskResultMessage(taskID, false, 1, err.Error()))
-		return
-	}
-
 	c.SetBusy(true)
 	defer c.SetBusy(false)
 

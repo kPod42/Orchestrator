@@ -21,13 +21,10 @@ work:
       address: 127.0.0.1:10000
 
 security:
-  dev_mode: true
   allow_exec: true
   allowed_shells:
     - sh
     - powershell
-  allowed_actions:
-    - echo
-    - hostname
-    - list_processes
+  action_policy:
+    mode: allow_all_known
   exec_timeout_sec: 60

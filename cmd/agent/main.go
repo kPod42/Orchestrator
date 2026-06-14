@@ -33,8 +33,8 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	exec := executor.New()
 	policy := security.New(cfg.Security)
+	exec := executor.New(policy)
 	busyState := state.NewBusy()
 
 	presenceClient := presence.New(
